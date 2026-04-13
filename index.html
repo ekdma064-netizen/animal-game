@@ -12,33 +12,28 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f0f7ff;min-height:100vh}
 h1{font-size:28px;font-weight:700;color:#2d5be3;margin-bottom:8px;text-align:center}
 h2{font-size:22px;font-weight:700;color:#2d5be3;margin-bottom:16px;text-align:center}
 .sub{font-size:15px;color:#666;text-align:center;margin-bottom:24px;line-height:1.6}
-input[type=text]{width:100%;max-width:320px;padding:14px 18px;font-size:18px;border:2px solid #b3c9ff;border-radius:16px;outline:none;text-align:center;background:#fff}
+input[type=text]{width:100%;max-width:320px;padding:14px 18px;font-size:18px;border:2px solid #b3c9ff;border-radius:16px;outline:none;text-align:center;background:#fff;display:block}
 input[type=text]:focus{border-color:#2d5be3}
-.btn{padding:14px 36px;font-size:18px;font-weight:700;border:none;border-radius:20px;cursor:pointer;margin-top:10px;transition:transform .1s;width:100%;max-width:320px;display:block}
+.btn{padding:14px;font-size:17px;font-weight:700;border:none;border-radius:20px;cursor:pointer;margin-top:10px;width:100%;max-width:320px;display:block}
 .btn:active{transform:scale(.97)}
 .btn-primary{background:#2d5be3;color:#fff}
 .btn-secondary{background:#fff;color:#2d5be3;border:2px solid #2d5be3}
-.btn-danger{background:#fff;color:#e53935;border:2px solid #e53935;font-size:15px;padding:10px}
-
+.btn-danger{background:#fff;color:#e53935;border:2px solid #e53935;font-size:15px}
 .topbar{background:#fff;border-bottom:1px solid #e0eaff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;width:100%}
 .topbar-name{font-size:15px;font-weight:700;color:#2d5be3}
 .topbar-count{font-size:13px;color:#666}
 .page{width:100%;display:flex;flex-direction:column;align-items:center;padding:24px 20px 40px}
-
-/* 포획 */
 #capture-emoji{font-size:110px;animation:pop .6s ease-out;display:block;text-align:center;margin-bottom:8px}
-@keyframes pop{0%{transform:scale(0) rotate(-15deg);opacity:0}70%{transform:scale(1.25) rotate(5deg)}100%{transform:scale(1);opacity:1}}
-.capture-title{font-size:26px;font-weight:700;color:#2d5be3;margin-bottom:8px;text-align:center}
+@keyframes pop{0%{transform:scale(0) rotate(-15deg);opacity:0}70%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1);opacity:1}}
+.capture-title{font-size:24px;font-weight:700;color:#2d5be3;margin-bottom:8px;text-align:center}
 .capture-desc{font-size:15px;color:#666;margin-bottom:6px;max-width:280px;line-height:1.6;text-align:center}
 .capture-new{font-size:14px;font-weight:700;color:#ff6b00;margin-bottom:20px;text-align:center}
-.sparkle{font-size:32px;animation:spin 1.5s linear infinite;display:inline-block;text-align:center;width:100%}
+.sparkle{font-size:32px;animation:spin 1.5s linear infinite;display:block;text-align:center;margin-bottom:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.already-banner{background:#fff3e0;border:2px solid #ffb74d;border-radius:16px;padding:20px;text-align:center;max-width:320px;margin-bottom:20px}
-.already-banner .emoji{font-size:56px;display:block;margin-bottom:8px}
+.already-banner{background:#fff3e0;border:2px solid #ffb74d;border-radius:16px;padding:20px;text-align:center;max-width:320px;margin-bottom:20px;width:100%}
+.already-banner .em{font-size:56px;display:block;margin-bottom:8px}
 .already-banner p{font-size:16px;color:#e65100;font-weight:700;margin-bottom:4px}
 .already-banner small{font-size:13px;color:#888}
-
-/* 도감 */
 .dex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:400px;margin-bottom:20px}
 .dex-card{background:#fff;border-radius:16px;padding:14px 8px;text-align:center;border:2px solid #e0eaff}
 .dex-card.caught{border-color:#2d5be3;background:#f0f4ff}
@@ -47,58 +42,55 @@ input[type=text]:focus{border-color:#2d5be3}
 .dex-label{font-size:13px;font-weight:700;color:#333}
 .dex-num{font-size:11px;color:#aaa}
 .count-bar{background:#e0eaff;border-radius:12px;padding:8px 20px;font-size:15px;font-weight:700;color:#2d5be3;margin-bottom:20px}
-
-/* 시작화면 저장된 이름 */
-.saved-box{background:#fff;border:2px solid #b3c9ff;border-radius:16px;padding:16px 20px;max-width:320px;width:100%;text-align:center;margin-bottom:8px}
-.saved-box p{font-size:13px;color:#888;margin-bottom:6px}
-.saved-box strong{font-size:18px;color:#2d5be3}
-
+.saved-box{background:#fff;border:2px solid #b3c9ff;border-radius:16px;padding:16px;max-width:320px;width:100%;text-align:center;margin-bottom:4px}
+.saved-box small{font-size:13px;color:#888}
+.saved-box strong{font-size:20px;color:#2d5be3;display:block;margin-top:4px}
+.divider{font-size:13px;color:#aaa;margin:10px 0;text-align:center}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:20px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:300;white-space:nowrap}
 .toast.show{opacity:1}
-.divider{font-size:13px;color:#aaa;margin:8px 0;text-align:center}
 </style>
 </head>
 <body>
 
 <!-- 시작 화면 -->
-<div class="screen active" id="start-screen">
-  <div style="font-size:64px;margin-bottom:12px">🌿</div>
+<div class="screen active" id="s-start">
+  <div style="font-size:64px;margin-bottom:12px;text-align:center">🌿</div>
   <h1>교실 동물 탐험대</h1>
   <p class="sub">교실 곳곳에 숨은 동물 친구들을<br>찾아서 포획해보세요!</p>
-  <div id="saved-section" style="display:none;width:100%;max-width:320px">
+  <div id="saved-box" style="display:none;width:100%;max-width:320px">
     <div class="saved-box">
-      <p>저장된 탐험가</p>
-      <strong id="saved-name-text"></strong>
+      <small>저장된 탐험가</small>
+      <strong id="saved-name"></strong>
     </div>
-    <button class="btn btn-primary" onclick="continueGame()">이어서 탐험하기</button>
-    <div class="divider">또는</div>
+    <button class="btn btn-primary" id="btn-continue">이어서 탐험하기</button>
+    <div class="divider">또는 새 이름으로 시작</div>
   </div>
-  <input type="text" id="name-input" placeholder="새 이름으로 시작" maxlength="10">
-  <button class="btn btn-primary" onclick="startNew()" style="margin-top:10px">새로 시작하기</button>
+  <input type="text" id="name-input" placeholder="이름 입력" maxlength="10">
+  <button class="btn btn-primary" id="btn-new" style="margin-top:10px">시작하기</button>
 </div>
 
 <!-- 포획 화면 -->
-<div class="screen" id="capture-screen">
+<div class="screen" id="s-capture">
   <div class="topbar">
-    <span class="topbar-name" id="cap-name-bar"></span>
-    <span class="topbar-count" id="cap-count-bar"></span>
+    <span class="topbar-name" id="c-name"></span>
+    <span class="topbar-count" id="c-count"></span>
   </div>
   <div class="page">
-    <div id="capture-content"></div>
+    <div id="capture-content" style="width:100%;max-width:320px"></div>
     <button class="btn btn-primary" onclick="goDex()">도감 보기</button>
     <button class="btn btn-secondary" onclick="goHome()">계속 탐험하기</button>
   </div>
 </div>
 
 <!-- 도감 화면 -->
-<div class="screen" id="dex-screen">
+<div class="screen" id="s-dex">
   <div class="topbar">
-    <span class="topbar-name" id="dex-name-bar"></span>
-    <span class="topbar-count" id="dex-count-bar-top"></span>
+    <span class="topbar-name" id="d-name"></span>
+    <span class="topbar-count" id="d-count"></span>
   </div>
   <div class="page">
     <h2>내 동물 도감</h2>
-    <div class="count-bar" id="dex-count-bar"></div>
+    <div class="count-bar" id="d-bar"></div>
     <div class="dex-grid" id="dex-grid"></div>
     <button class="btn btn-secondary" onclick="goHome()">계속 탐험하기</button>
     <button class="btn btn-danger" onclick="resetGame()" style="margin-top:16px">처음부터 다시 시작</button>
@@ -118,113 +110,129 @@ const ANIMALS={
   star:{emoji:'🦄',name:'반짝이',desc:'별빛으로 만들어진 신비로운 유니콘!'},
   octopus:{emoji:'🐙',name:'문어몽',desc:'다리가 8개! 뭐든 척척 잡아드려요.'}
 };
-const KEY='animal_game_v3';
+const KEY='adg_v4';
 
-function load(){try{return JSON.parse(localStorage.getItem(KEY))||null;}catch(e){return null;}}
+function load(){try{const d=localStorage.getItem(KEY);return d?JSON.parse(d):null;}catch(e){return null;}}
 function save(d){try{localStorage.setItem(KEY,JSON.stringify(d));}catch(e){}}
-function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function del(){try{localStorage.removeItem(KEY);}catch(e){}}
 
-function initStart(){
-  const d=load();
-  if(d&&d.name){
-    document.getElementById('saved-name-text').textContent=d.name;
-    document.getElementById('saved-section').style.display='block';
-  }
+function toast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-function continueGame(){
-  const d=load();
-  const params=new URLSearchParams(window.location.search);
-  const animal=params.get('animal');
-  if(animal&&ANIMALS[animal]){showCapture(animal,d);}
-  else{goDex();}
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function getAnimalParam(){
+  return new URLSearchParams(window.location.search).get('animal');
+}
+
+function goHome(){
+  // 파라미터 제거하고 홈으로
+  history.replaceState(null,'',location.pathname);
+  init();
+}
+
+function resetGame(){
+  if(!confirm('정말 처음부터 다시 시작할까요?\n수집한 동물이 모두 사라져요!')) return;
+  del();
+  history.replaceState(null,'',location.pathname);
+  init();
 }
 
 function startNew(){
   const n=document.getElementById('name-input').value.trim();
-  if(!n){showToast('이름을 입력해 주세요!');return;}
+  if(!n){toast('이름을 입력해 주세요!');return;}
   const d={name:n,caught:[]};
   save(d);
-  const params=new URLSearchParams(window.location.search);
-  const animal=params.get('animal');
-  if(animal&&ANIMALS[animal]){showCapture(animal,d);}
-  else{goDex();}
+  const animal=getAnimalParam();
+  if(animal&&ANIMALS[animal]) doCapture(animal,d);
+  else goDex();
 }
 
-function showCapture(id,d){
+function continueGame(){
+  const d=load();
+  if(!d){init();return;}
+  const animal=getAnimalParam();
+  if(animal&&ANIMALS[animal]) doCapture(animal,d);
+  else goDex();
+}
+
+function doCapture(id,d){
   const a=ANIMALS[id];
   const isNew=!d.caught.includes(id);
   if(isNew){d.caught.push(id);save(d);}
-  document.getElementById('cap-name-bar').textContent=d.name+'의 탐험';
-  document.getElementById('cap-count-bar').textContent=d.caught.length+'/'+Object.keys(ANIMALS).length+' 포획';
+  document.getElementById('c-name').textContent=d.name+'의 탐험';
+  document.getElementById('c-count').textContent=d.caught.length+'/'+Object.keys(ANIMALS).length+' 포획';
   const c=document.getElementById('capture-content');
   if(isNew){
-    c.innerHTML=`<div style="text-align:center">
-      <div class="sparkle">✨</div>
+    c.innerHTML=`
+      <span class="sparkle">✨</span>
       <span id="capture-emoji">${a.emoji}</span>
       <div class="capture-title">${a.name} 포획!</div>
       <div class="capture-desc">${a.desc}</div>
-      <div class="capture-new">🎉 새로운 동물 발견!</div>
-    </div>`;
-    if(d.caught.length===Object.keys(ANIMALS).length){
-      setTimeout(()=>showToast('🏆 모든 동물 포획 완료! 대단해요!'),600);
-    }
-  }else{
-    c.innerHTML=`<div class="already-banner">
-      <span class="emoji">${a.emoji}</span>
-      <p>${a.name} - 이미 포획했어요!</p>
-      <small>다른 QR을 찾아보세요</small>
-    </div>`;
+      <div class="capture-new">🎉 새로운 동물 발견!</div>`;
+    if(d.caught.length===Object.keys(ANIMALS).length)
+      setTimeout(()=>toast('🏆 모든 동물 포획 완료! 대단해요!'),700);
+  } else {
+    c.innerHTML=`
+      <div class="already-banner">
+        <span class="em">${a.emoji}</span>
+        <p>${a.name} - 이미 포획했어요!</p>
+        <small>다른 QR을 찾아보세요</small>
+      </div>`;
   }
-  showScreen('capture-screen');
+  show('s-capture');
 }
 
 function goDex(){
   const d=load();
-  if(!d){showScreen('start-screen');return;}
-  document.getElementById('dex-name-bar').textContent=d.name+'의 탐험';
-  document.getElementById('dex-count-bar-top').textContent=d.caught.length+'/'+Object.keys(ANIMALS).length+' 포획';
-  document.getElementById('dex-count-bar').textContent=d.caught.length+'마리 / '+Object.keys(ANIMALS).length+'마리 발견';
+  if(!d){init();return;}
+  document.getElementById('d-name').textContent=d.name+'의 탐험';
+  document.getElementById('d-count').textContent=d.caught.length+'/'+Object.keys(ANIMALS).length+' 포획';
+  document.getElementById('d-bar').textContent=d.caught.length+'마리 / '+Object.keys(ANIMALS).length+'마리 발견';
   const grid=document.getElementById('dex-grid');
   grid.innerHTML='';
   Object.entries(ANIMALS).forEach(([id,a],i)=>{
     const ok=d.caught.includes(id);
-    const card=document.createElement('div');
-    card.className='dex-card'+(ok?' caught':' unknown');
-    card.innerHTML=`<span class="dex-emoji">${a.emoji}</span><div class="dex-label">${ok?a.name:'???'}</div><div class="dex-num">No.${String(i+1).padStart(2,'0')}</div>`;
-    grid.appendChild(card);
+    const div=document.createElement('div');
+    div.className='dex-card'+(ok?' caught':' unknown');
+    div.innerHTML=`<span class="dex-emoji">${a.emoji}</span><div class="dex-label">${ok?a.name:'???'}</div><div class="dex-num">No.${String(i+1).padStart(2,'0')}</div>`;
+    grid.appendChild(div);
   });
-  showScreen('dex-screen');
+  show('s-dex');
 }
 
-function goHome(){
-  window.location.href=window.location.pathname;
-}
-
-function resetGame(){
-  if(confirm('정말 처음부터 다시 시작할까요?\n수집한 동물이 모두 사라져요!')){
-    localStorage.removeItem(KEY);
-    window.location.href=window.location.pathname;
-  }
-}
-
-// 페이지 로드
-window.addEventListener('load',()=>{
-  const params=new URLSearchParams(window.location.search);
-  const animal=params.get('animal');
+function init(){
   const d=load();
-  if(animal&&ANIMALS[animal]){
-    if(d&&d.name){
-      showCapture(animal,d);
-    }else{
-      initStart();
+  const animal=getAnimalParam();
+
+  // 저장된 이름 있을 때
+  if(d&&d.name){
+    // QR 파라미터 있으면 바로 포획
+    if(animal&&ANIMALS[animal]){
+      doCapture(animal,d);
+      return;
     }
-  }else{
-    if(d&&d.name){initStart();goDex();}
-    else{initStart();}
+    // 저장된 이름 표시
+    document.getElementById('saved-name').textContent=d.name;
+    document.getElementById('saved-box').style.display='block';
+    document.getElementById('btn-continue').onclick=continueGame;
+    // 시작화면 (이어하기 or 새로 시작 선택)
+    show('s-start');
+  } else {
+    // 저장 없음 → 시작화면
+    document.getElementById('saved-box').style.display='none';
+    show('s-start');
   }
-});
+}
+
+document.getElementById('btn-new').onclick=startNew;
+window.addEventListener('load', init);
 </script>
 </body>
 </html>
