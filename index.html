@@ -132,15 +132,14 @@ function getAnimalParam(){
 }
 
 function goHome(){
-  // 파라미터 제거하고 홈으로
-  history.replaceState(null,'',location.pathname);
+  try{history.replaceState(null,'',location.pathname);}catch(e){}
   init();
 }
 
 function resetGame(){
   if(!confirm('정말 처음부터 다시 시작할까요?\n수집한 동물이 모두 사라져요!')) return;
   del();
-  history.replaceState(null,'',location.pathname);
+  try{history.replaceState(null,'',location.pathname);}catch(e){}
   init();
 }
 
