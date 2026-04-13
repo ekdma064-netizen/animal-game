@@ -169,24 +169,25 @@ function stopCam(){
 
 function scanFrame(){
   const now=Date.now();
-  if(now-lastScan<1000)return; // 1초 쿨다운
   const v=document.getElementById('qr-video');
   const c=document.getElementById('qr-canvas');
-  if(!v.videoWidth)return;
+  const st=document.getElementById('scan-status');
+  if(!v.videoWidth){st.textContent='📷 카메라 준비중... ('+v.readyState+')';return;}
   c.width=v.videoWidth;c.height=v.videoHeight;
   const ctx=c.getContext('2d',{willReadFrequently:true});
   ctx.drawImage(v,0,0);
   const img=ctx.getImageData(0,0,c.width,c.height);
-  const code=jsQR(img.data,c.width,c.height,{inversionAttempts:'dontInvert'});
+  st.textContent='📡 스캔중... '+c.width+'x'+c.height+' ('+Math.round((now-lastScan)/1000)+'s)';
+  const code=jsQR(img.data,c.width,c.height,{inversionAttempts:'attemptBoth'});
   if(code){
     lastScan=now;
+    st.textContent='✅ QR감지: '+code.data.substring(0,40);
     const match=code.data.match(/[?&]animal=([a-z]+)/);
     if(match&&ANIMALS[match[1]]){
-      document.getElementById('scan-status').textContent='포획!';
       stopCam();
       doCapture(match[1]);
     } else {
-      document.getElementById('scan-status').textContent='동물 QR이 아니에요. 다시 시도!';
+      st.textContent='⚠️ 동물 QR 아님: '+code.data.substring(0,30);
     }
   }
 }
