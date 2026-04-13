@@ -174,6 +174,7 @@ let caught=new Set();
 let stream=null;
 let scanning=false;
 let scanInterval=null;
+let lastScan=0;
 
 function startGame(){
   const n=document.getElementById('name-input').value.trim();
@@ -210,7 +211,7 @@ async function startCamera(){
     v.srcObject=stream;
     v.play();
     scanning=true;
-    scanInterval=setInterval(scanFrame,200);
+    scanInterval=setInterval(scanFrame,100);
   }catch(e){
     document.getElementById('scan-status').textContent='카메라 권한이 필요해요. 테스트 버튼을 눌러보세요!';
   }
@@ -222,18 +223,24 @@ function stopCamera(){
 }
 
 function scanFrame(){
+  const now=Date.now();
+  if(now-lastScan<100)return;
   const v=document.getElementById('qr-video');
   const c=document.getElementById('qr-canvas');
   if(v.readyState!==v.HAVE_ENOUGH_DATA)return;
-  c.width=v.videoWidth;c.height=v.videoHeight;
-  const ctx=c.getContext('2d');
+  const w=v.videoWidth,h=v.videoHeight;
+  c.width=w;c.height=h;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
   ctx.drawImage(v,0,0);
-  const img=ctx.getImageData(0,0,c.width,c.height);
-  const code=jsQR(img.data,img.width,img.height);
+  const img=ctx.getImageData(0,0,w,h);
+  const code=jsQR(img.data,w,h,{inversionAttempts:'dontInvert'});
   if(code){
+    lastScan=now;
     const url=code.data;
+    document.getElementById('scan-status').textContent='QR 인식됨: '+url;
     const match=url.match(/[?&]animal=([a-z]+)/);
     if(match){capture(match[1]);}
+    else{showToast('동물 QR이 아니에요!');}
   }
 }
 
