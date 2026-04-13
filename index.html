@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>교실 동물 탐험대</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#f0f7ff;min-height:100vh;overflow-x:hidden}
+.screen{display:none;min-height:100vh;padding:20px;flex-direction:column;align-items:center;justify-content:center}
+.screen.active{display:flex}
+h1{font-size:28px;font-weight:700;color:#2d5be3;margin-bottom:8px;text-align:center}
+h2{font-size:22px;font-weight:700;color:#2d5be3;margin-bottom:16px;text-align:center}
+.sub{font-size:15px;color:#666;text-align:center;margin-bottom:24px}
+input[type=text]{width:100%;max-width:320px;padding:14px 18px;font-size:18px;border:2px solid #b3c9ff;border-radius:16px;outline:none;text-align:center;background:#fff}
+input[type=text]:focus{border-color:#2d5be3}
+.btn{padding:14px 36px;font-size:18px;font-weight:700;border:none;border-radius:20px;cursor:pointer;margin-top:12px;transition:transform .1s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:#2d5be3;color:#fff;width:100%;max-width:320px}
+.btn-secondary{background:#fff;color:#2d5be3;border:2px solid #2d5be3;width:100%;max-width:320px}
+.animal-badge{font-size:64px;margin:12px 0}
+.count-badge{background:#2d5be3;color:#fff;border-radius:12px;padding:8px 20px;font-size:16px;font-weight:700;margin-bottom:16px}
+
+/* QR Scanner */
+#scanner-wrap{position:relative;width:100%;max-width:360px;border-radius:20px;overflow:hidden;background:#000}
+#qr-video{width:100%;display:block}
+.scan-frame{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.scan-box{width:200px;height:200px;border:3px solid #fff;border-radius:12px;box-shadow:0 0 0 2000px rgba(0,0,0,.4)}
+.scan-line{position:absolute;width:180px;height:3px;background:#2d5be3;border-radius:2px;animation:scan 2s linear infinite}
+@keyframes scan{0%{top:calc(50% - 95px)}100%{top:calc(50% + 95px)}}
+.scan-hint{font-size:14px;color:#aaa;margin-top:10px;text-align:center}
+
+/* Capture screen */
+#capture-anim{font-size:100px;animation:pop .5s ease-out;text-align:center}
+@keyframes pop{0%{transform:scale(0) rotate(-10deg);opacity:0}70%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.capture-name{font-size:24px;font-weight:700;color:#2d5be3;margin:8px 0 4px}
+.capture-desc{font-size:14px;color:#666;max-width:280px;text-align:center;margin-bottom:20px}
+.sparkle{font-size:28px;animation:spin 1.5s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Dex */
+.dex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:400px;margin-bottom:20px}
+.dex-card{background:#fff;border-radius:16px;padding:14px 8px;text-align:center;border:2px solid #e0eaff;transition:.2s}
+.dex-card.caught{border-color:#2d5be3;background:#f0f4ff}
+.dex-card.unknown{filter:grayscale(1);opacity:.4}
+.dex-emoji{font-size:36px;display:block;margin-bottom:4px}
+.dex-label{font-size:13px;font-weight:700;color:#333}
+.dex-num{font-size:11px;color:#aaa}
+
+/* Navbar */
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e0eaff;display:flex;z-index:100}
+.nav-btn{flex:1;padding:14px 0;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;color:#aaa;display:flex;flex-direction:column;align-items:center;gap:4px}
+.nav-btn.active{color:#2d5be3}
+.nav-icon{font-size:20px}
+
+/* Top bar */
+.topbar{position:fixed;top:0;left:0;right:0;background:#fff;border-bottom:1px solid #e0eaff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;z-index:100}
+.topbar-name{font-size:15px;font-weight:700;color:#2d5be3}
+.topbar-count{font-size:13px;color:#666}
+.game-screen{padding-top:60px;padding-bottom:70px}
+
+/* Result modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:200;display:none}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:24px;padding:32px 24px;max-width:320px;width:90%;text-align:center}
+.already-text{font-size:15px;color:#666;margin:8px 0 20px}
+
+/* Alert */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:20px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:300;white-space:nowrap}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- 시작 화면 -->
+<div class="screen active" id="start-screen">
+  <div style="font-size:72px;margin-bottom:16px">🌿</div>
+  <h1>교실 동물 탐험대</h1>
+  <p class="sub">교실 곳곳에 숨은 동물 친구들을<br>찾아서 포획해보세요!</p>
+  <input type="text" id="name-input" placeholder="이름을 입력하세요" maxlength="10">
+  <button class="btn btn-primary" onclick="startGame()" style="margin-top:16px">탐험 시작!</button>
+</div>
+
+<!-- 게임 화면 (네비바 포함) -->
+<div class="screen" id="game-screen">
+  <div class="topbar">
+    <span class="topbar-name" id="topbar-name"></span>
+    <span class="topbar-count" id="topbar-count"></span>
+  </div>
+
+  <!-- 스캔 탭 -->
+  <div id="tab-scan" class="game-screen" style="width:100%;display:flex;flex-direction:column;align-items:center;padding-top:80px;padding-bottom:80px;min-height:100vh">
+    <h2>QR 코드 스캔</h2>
+    <p class="sub">교실에 붙어 있는 QR을 찾아<br>카메라로 비춰보세요!</p>
+    <div id="scanner-wrap">
+      <video id="qr-video" autoplay playsinline muted></video>
+      <div class="scan-frame">
+        <div class="scan-box"><div class="scan-line"></div></div>
+      </div>
+    </div>
+    <canvas id="qr-canvas" style="display:none"></canvas>
+    <p class="scan-hint" id="scan-status">카메라를 QR 코드에 가까이 대세요</p>
+    <div style="margin-top:24px;width:100%;max-width:360px">
+      <p style="font-size:13px;color:#aaa;text-align:center;margin-bottom:8px">📋 테스트용 바로 포획</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        <button onclick="testCapture('fox')" style="padding:8px;font-size:11px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer">🦊 여우</button>
+        <button onclick="testCapture('rabbit')" style="padding:8px;font-size:11px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer">🐰 토끼</button>
+        <button onclick="testCapture('penguin')" style="padding:8px;font-size:11px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer">🐧 펭귄</button>
+        <button onclick="testCapture('frog')" style="padding:8px;font-size:11px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer">🐸 개구리</button>
+        <button onclick="testCapture('bear')" style="padding:8px;font-size:11px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer">🐻 곰돌이</button>
+        <button onclick="testCapture('cat')" style="padding:8px;font-size:11px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer">🐱 고양이</button>
+        <button onclick="testCapture('star')" style="padding:8px;font-size:11px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer">🦄 별이</button>
+        <button onclick="testCapture('octopus')" style="padding:8px;font-size:11px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer">🐙 문어</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 도감 탭 -->
+  <div id="tab-dex" style="display:none;width:100%;flex-direction:column;align-items:center;padding:80px 20px;min-height:100vh">
+    <h2>내 동물 도감</h2>
+    <p class="sub" id="dex-sub"></p>
+    <div class="dex-grid" id="dex-grid"></div>
+    <button class="btn btn-secondary" onclick="goQR()">더 찾으러 가기</button>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" id="nav-scan" onclick="showTab('scan')">
+      <span class="nav-icon">📷</span>스캔
+    </button>
+    <button class="nav-btn" id="nav-dex" onclick="showTab('dex')">
+      <span class="nav-icon">📖</span>도감
+    </button>
+  </div>
+</div>
+
+<!-- 포획 성공 모달 -->
+<div class="modal-bg" id="capture-modal">
+  <div class="modal">
+    <div class="sparkle">✨</div>
+    <div id="capture-anim" class="animal-badge"></div>
+    <div class="capture-name" id="cap-name"></div>
+    <div class="capture-desc" id="cap-desc"></div>
+    <button class="btn btn-primary" onclick="closeCapture()">도감에 추가!</button>
+  </div>
+</div>
+
+<!-- 이미 잡은 동물 모달 -->
+<div class="modal-bg" id="already-modal">
+  <div class="modal">
+    <div style="font-size:56px;margin-bottom:8px" id="already-emoji"></div>
+    <div class="capture-name" id="already-name">이미 포획했어요!</div>
+    <div class="already-text">이 친구는 이미 도감에 있어요.<br>다른 동물을 찾아보세요!</div>
+    <button class="btn btn-primary" onclick="closeAlready()">계속 탐험!</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ANIMALS={
+  fox:{emoji:'🦊',name:'꼬미여우',desc:'장난꾸러기 여우! 꼬리가 아주 복슬복슬해요.',color:'#ff6b00'},
+  rabbit:{emoji:'🐰',name:'토끼별',desc:'달에서 온 토끼. 귀가 엄청 길어요!',color:'#ff85a1'},
+  penguin:{emoji:'🐧',name:'펭이',desc:'남극에서 온 친구. 춤을 아주 잘 춰요!',color:'#4a90d9'},
+  frog:{emoji:'🐸',name:'초록이',desc:'연못의 수호자! 점프 실력이 최고예요.',color:'#5cb85c'},
+  bear:{emoji:'🐻',name:'구름곰',desc:'구름 위에서 내려온 포근한 곰.',color:'#8b6914'},
+  cat:{emoji:'🐱',name:'냥냥이',desc:'새침하지만 사실 엄청 친해지고 싶어요.',color:'#e8a838'},
+  star:{emoji:'🦄',name:'반짝이',desc:'별빛으로 만들어진 신비로운 유니콘!',color:'#9b59b6'},
+  octopus:{emoji:'🐙',name:'문어몽',desc:'다리가 8개! 뭐든 척척 잡아드려요.',color:'#e91e8c'}
+};
+
+let playerName='';
+let caught=new Set();
+let stream=null;
+let scanning=false;
+let scanInterval=null;
+
+function startGame(){
+  const n=document.getElementById('name-input').value.trim();
+  if(!n){showToast('이름을 입력해 주세요!');return;}
+  playerName=n;
+  document.getElementById('start-screen').classList.remove('active');
+  document.getElementById('game-screen').classList.add('active');
+  document.getElementById('topbar-name').textContent=n+'의 탐험';
+  updateCount();
+  startCamera();
+  renderDex();
+}
+
+function updateCount(){
+  document.getElementById('topbar-count').textContent=caught.size+'/'+Object.keys(ANIMALS).length+' 포획';
+}
+
+function showTab(tab){
+  document.getElementById('tab-scan').style.display=tab==='scan'?'flex':'none';
+  document.getElementById('tab-dex').style.display=tab==='dex'?'flex':'none';
+  document.getElementById('nav-scan').classList.toggle('active',tab==='scan');
+  document.getElementById('nav-dex').classList.toggle('active',tab==='dex');
+  if(tab==='dex'){renderDex();stopCamera();}
+  else{startCamera();}
+}
+
+function goQR(){showTab('scan');}
+
+async function startCamera(){
+  if(stream)return;
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:640},height:{ideal:480}}});
+    const v=document.getElementById('qr-video');
+    v.srcObject=stream;
+    v.play();
+    scanning=true;
+    scanInterval=setInterval(scanFrame,200);
+  }catch(e){
+    document.getElementById('scan-status').textContent='카메라 권한이 필요해요. 테스트 버튼을 눌러보세요!';
+  }
+}
+
+function stopCamera(){
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+  if(scanInterval){clearInterval(scanInterval);scanInterval=null;}
+}
+
+function scanFrame(){
+  const v=document.getElementById('qr-video');
+  const c=document.getElementById('qr-canvas');
+  if(v.readyState!==v.HAVE_ENOUGH_DATA)return;
+  c.width=v.videoWidth;c.height=v.videoHeight;
+  const ctx=c.getContext('2d');
+  ctx.drawImage(v,0,0);
+  const img=ctx.getImageData(0,0,c.width,c.height);
+  const code=jsQR(img.data,img.width,img.height);
+  if(code){
+    const url=code.data;
+    const match=url.match(/[?&]animal=([a-z]+)/);
+    if(match){capture(match[1]);}
+  }
+}
+
+function testCapture(id){capture(id);}
+
+function capture(id){
+  if(!ANIMALS[id]){showToast('알 수 없는 동물이에요!');return;}
+  const a=ANIMALS[id];
+  if(caught.has(id)){
+    document.getElementById('already-emoji').textContent=a.emoji;
+    document.getElementById('already-name').textContent=a.name+' - 이미 포획했어요!';
+    document.getElementById('already-modal').classList.add('show');
+    return;
+  }
+  caught.add(id);
+  updateCount();
+  document.getElementById('capture-anim').textContent=a.emoji;
+  document.getElementById('cap-name').textContent=a.name+' 포획!';
+  document.getElementById('cap-desc').textContent=a.desc;
+  document.getElementById('capture-modal').classList.add('show');
+}
+
+function closeCapture(){
+  document.getElementById('capture-modal').classList.remove('show');
+  renderDex();
+  if(caught.size===Object.keys(ANIMALS).length){
+    setTimeout(()=>showToast('🎉 모든 동물 포획 완료! 대단해요!'),400);
+  }
+}
+
+function closeAlready(){
+  document.getElementById('already-modal').classList.remove('show');
+}
+
+function renderDex(){
+  const grid=document.getElementById('dex-grid');
+  grid.innerHTML='';
+  Object.entries(ANIMALS).forEach(([id,a],i)=>{
+    const isCaught=caught.has(id);
+    const card=document.createElement('div');
+    card.className='dex-card'+(isCaught?' caught':' unknown');
+    card.innerHTML=`<span class="dex-emoji">${a.emoji}</span><div class="dex-label">${isCaught?a.name:'???'}</div><div class="dex-num">No.${String(i+1).padStart(2,'0')}</div>`;
+    grid.appendChild(card);
+  });
+  document.getElementById('dex-sub').textContent=`${caught.size}마리 / ${Object.keys(ANIMALS).length}마리 발견`;
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+</script>
+</body>
+</html>
