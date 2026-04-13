@@ -110,21 +110,17 @@ function getParam(){return new URLSearchParams(location.search).get('animal');}
 
 // 항상 시작화면부터
 window.addEventListener('load',()=>{
+  // 모든 이전 버전 데이터 삭제
+  ['adg_v4','adg_v3','animal_game_v3','animal_game_data'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
+  // ?reset=1 이면 현재 데이터도 삭제
+  if(new URLSearchParams(location.search).get('reset')==='1'){
+    try{localStorage.removeItem(KEY);}catch(e){}
+  }
   const animal=getParam();
   const d=load();
-  // QR로 접속 + 이름 있으면 → 이름 입력 생략하고 바로 포획
-  if(animal&&ANIMALS[animal]&&d.name){
-    currentName=d.name;
-    doCapture(animal);
-    return;
-  }
-  // QR로 접속 + 이름 없으면 → 이름 입력 후 포획
+  // 항상 이름 입력 화면 표시 (자동 진입 없음)
   if(animal&&ANIMALS[animal]){
     document.getElementById('start-sub').textContent='이름을 입력하고\n동물을 포획해보세요!';
-  }
-  // 저장된 이름 있으면 자동 입력
-  if(d.name){
-    document.getElementById('name-input').value=d.name;
   }
   show('s-start');
 });
