@@ -110,6 +110,13 @@ const ANIMALS={
   star:{emoji:'🦄',name:'반짝이',desc:'별빛으로 만들어진 신비로운 유니콘!'},
   octopus:{emoji:'🐙',name:'문어몽',desc:'다리가 8개! 뭐든 척척 잡아드려요.'}
 };
+const MISS=[
+  {emoji:'💨',msg:'바람만 쐤어요... 다음엔 잡을 수 있을 거예요!'},
+  {emoji:'🍃',msg:'나뭇잎만 흔들렸어요. 동물이 도망갔나봐요!'},
+  {emoji:'👣',msg:'발자국만 남아있어요. 조금 늦었나봐요!'},
+  {emoji:'😴',msg:'동물이 숨어버렸어요. 다른 곳을 찾아봐요!'},
+  {emoji:'🕳️',msg:'땅굴로 도망갔어요! 다음엔 더 빨리 찾아봐요!'}
+];
 
 var player = null;
 var camStream = null;
@@ -206,10 +213,14 @@ function scanWithJsQR(){
 function handleQR(data){
   if(cooldown)return;
   cooldown=true;
-  var match=data.match(/[?&]animal=([a-z]+)/);
-  if(match&&ANIMALS[match[1]]){
+  var animalMatch=data.match(/[?&]animal=([a-z]+)/);
+  var missMatch=data.match(/[?&]animal=miss/);
+  if(missMatch||data.indexOf('?animal=miss')!==-1||data.indexOf('&animal=miss')!==-1){
     stopCam();
-    doCapture(match[1]);
+    doMiss();
+  } else if(animalMatch&&ANIMALS[animalMatch[1]]){
+    stopCam();
+    doCapture(animalMatch[1]);
   } else {
     document.getElementById('scan-msg').textContent='⚠️ 동물 QR이 아니에요!';
     setTimeout(function(){cooldown=false;},2000);
@@ -219,6 +230,13 @@ function handleQR(data){
 function stopCam(){
   if(camTimer){clearInterval(camTimer);camTimer=null;}
   if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
+}
+
+function doMiss(){
+  var m=MISS[Math.floor(Math.random()*MISS.length)];
+  var c=document.getElementById('cap-content');
+  c.innerHTML='<div class="already"><span class="em">'+m.emoji+'</span><p>꽝! 놓쳤어요!</p><small>'+m.msg+'</small></div>';
+  show('s-capture');
 }
 
 function doCapture(id){
