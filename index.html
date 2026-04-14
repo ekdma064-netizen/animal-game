@@ -22,6 +22,13 @@ input[type=text]:focus{border-color:#2d5be3}
 .tb-name{font-size:14px;font-weight:700;color:#2d5be3}
 .tb-count{font-size:13px;color:#666}
 .has-topbar{padding-top:60px}
+#cam-wrap{position:relative;width:100%;max-width:340px;border-radius:16px;overflow:hidden;background:#000;margin-bottom:10px}
+#cam-video{width:100%;display:block;max-height:260px;object-fit:cover}
+.scan-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.scan-box{width:180px;height:180px;border:3px solid #fff;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.4);position:relative}
+.scan-line{position:absolute;left:4px;right:4px;height:2px;background:#2d5be3;border-radius:2px;animation:sl 2s linear infinite}
+@keyframes sl{0%{top:4px}100%{top:calc(100% - 4px)}}
+#scan-msg{font-size:13px;color:#555;text-align:center;margin-bottom:8px;min-height:18px}
 .cap-emoji{font-size:100px;animation:pop .5s ease-out;display:block;text-align:center;margin-bottom:4px}
 @keyframes pop{0%{transform:scale(0) rotate(-15deg);opacity:0}70%{transform:scale(1.2) rotate(4deg)}100%{transform:scale(1);opacity:1}}
 .cap-title{font-size:22px;font-weight:700;color:#2d5be3;text-align:center;margin-bottom:6px}
@@ -41,10 +48,6 @@ input[type=text]:focus{border-color:#2d5be3}
 .dex-label{font-size:12px;font-weight:700;color:#333}
 .dex-num{font-size:11px;color:#aaa}
 .count-bar{background:#e0eaff;border-radius:10px;padding:7px 16px;font-size:14px;font-weight:700;color:#2d5be3;margin-bottom:16px}
-.guide-box{background:#fff;border:2px solid #b3c9ff;border-radius:14px;padding:16px;max-width:300px;width:100%;margin-bottom:16px;text-align:center}
-.guide-box .icon{font-size:40px;margin-bottom:8px;display:block}
-.guide-box p{font-size:14px;color:#444;line-height:1.7}
-.guide-box strong{color:#2d5be3}
 .toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 20px;border-radius:16px;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:999;white-space:nowrap}
 .toast.show{opacity:1}
 </style>
@@ -60,23 +63,25 @@ input[type=text]:focus{border-color:#2d5be3}
   <button class="btn btn-primary" onclick="onStart()">탐험 시작!</button>
 </div>
 
-<!-- 탐험 안내 -->
-<div class="screen has-topbar" id="s-hunt">
-  <div class="topbar"><span class="tb-name" id="ht-name"></span><span class="tb-count" id="ht-count"></span></div>
-  <h2>동물을 찾아라!</h2>
-  <div class="guide-box">
-    <span class="icon">📷</span>
-    <p>교실에 붙어있는 <strong>QR 코드</strong>를<br>태블릿 <strong>기본 카메라</strong>로 찍으세요!<br><br>찍으면 자동으로<br>동물이 나타나요 🐾</p>
+<!-- 스캔 -->
+<div class="screen has-topbar" id="s-scan">
+  <div class="topbar"><span class="tb-name" id="sc-name"></span><span class="tb-count" id="sc-count"></span></div>
+  <h2>QR 코드를 찾아보세요!</h2>
+  <p class="sub">교실에 붙어있는 QR에<br>카메라를 가까이 대세요</p>
+  <div id="cam-wrap">
+    <video id="cam-video" autoplay playsinline muted></video>
+    <div class="scan-overlay"><div class="scan-box"><div class="scan-line"></div></div></div>
   </div>
+  <canvas id="cam-canvas" style="display:none"></canvas>
+  <p id="scan-msg">카메라 시작 중...</p>
   <button class="btn btn-secondary" onclick="goDex()">도감 보기</button>
-  <button class="btn btn-danger" onclick="resetGame()" style="margin-top:10px">처음부터 다시 시작</button>
 </div>
 
-<!-- 포획 결과 -->
+<!-- 포획 -->
 <div class="screen has-topbar" id="s-capture">
   <div class="topbar"><span class="tb-name" id="cp-name"></span><span class="tb-count" id="cp-count"></span></div>
   <div id="cap-content" style="width:100%;max-width:300px;text-align:center"></div>
-  <button class="btn btn-primary" onclick="goHunt()">계속 탐험하기</button>
+  <button class="btn btn-primary" onclick="goScan()">계속 탐험하기</button>
   <button class="btn btn-secondary" onclick="goDex()">도감 보기</button>
 </div>
 
@@ -87,7 +92,7 @@ input[type=text]:focus{border-color:#2d5be3}
     <h2>내 동물 도감</h2>
     <div class="count-bar" id="dx-bar"></div>
     <div class="dex-grid" id="dex-grid"></div>
-    <button class="btn btn-secondary" onclick="goHunt()">계속 탐험하기</button>
+    <button class="btn btn-secondary" onclick="goScan()">계속 탐험하기</button>
     <button class="btn btn-danger" onclick="resetGame()" style="margin-top:10px">처음부터 다시 시작</button>
   </div>
 </div>
@@ -105,64 +110,125 @@ const ANIMALS={
   star:{emoji:'🦄',name:'반짝이',desc:'별빛으로 만들어진 신비로운 유니콘!'},
   octopus:{emoji:'🐙',name:'문어몽',desc:'다리가 8개! 뭐든 척척 잡아드려요.'}
 };
-const KEY='adg_v8';
 
-function load(){try{return JSON.parse(localStorage.getItem(KEY))||null;}catch(e){return null;}}
-function save(d){try{localStorage.setItem(KEY,JSON.stringify(d));}catch(e){}}
+// 세션스토리지 사용 (탭 닫으면 초기화)
+let player = JSON.parse(sessionStorage.getItem('player')||'null') || null;
+let camStream=null, camTimer=null, detector=null, cooldown=false;
+
+function savePlayer(){sessionStorage.setItem('player',JSON.stringify(player));}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function countTxt(d){return (d.caught||[]).length+'/'+Object.keys(ANIMALS).length+' 포획';}
-function setTopbars(d){
-  [['ht','s-hunt'],['cp','s-capture'],['dx','s-dex']].forEach(([p])=>{
+function setTopbars(){
+  if(!player)return;
+  const cnt=player.caught.length+'/'+Object.keys(ANIMALS).length+' 포획';
+  ['sc','cp','dx'].forEach(p=>{
     const n=document.getElementById(p+'-name');
     const c=document.getElementById(p+'-count');
-    if(n)n.textContent=d.name+'의 탐험';
-    if(c)c.textContent=countTxt(d);
+    if(n)n.textContent=player.name+'의 탐험';
+    if(c)c.textContent=cnt;
   });
 }
 
 function onStart(){
   const n=document.getElementById('name-input').value.trim();
   if(!n){toast('이름을 입력해 주세요!');return;}
-  // 이름 바뀌면 초기화, 같으면 유지
-  const prev=load();
-  let d;
-  if(prev&&prev.name===n){d=prev;}
-  else{d={name:n,caught:[]};}
-  save(d);
-  setTopbars(d);
-  goHunt();
+  player={name:n,caught:[]};
+  savePlayer();
+  setTopbars();
+  goScan();
 }
 
-function goHunt(){
-  const d=load();
-  if(!d){show('s-start');return;}
-  setTopbars(d);
-  show('s-hunt');
+async function goScan(){
+  setTopbars();
+  show('s-scan');
+  await startCam();
 }
 
-function goDex(){
-  const d=load();
-  if(!d){show('s-start');return;}
-  setTopbars(d);
-  document.getElementById('dx-bar').textContent=(d.caught||[]).length+'마리 / '+Object.keys(ANIMALS).length+'마리 발견';
-  const grid=document.getElementById('dex-grid');
-  grid.innerHTML='';
-  Object.entries(ANIMALS).forEach(([id,a],i)=>{
-    const ok=(d.caught||[]).includes(id);
-    const div=document.createElement('div');
-    div.className='dex-card'+(ok?' caught':' unknown');
-    div.innerHTML=`<span class="dex-emoji">${a.emoji}</span><div class="dex-label">${ok?a.name:'???'}</div><div class="dex-num">No.${String(i+1).padStart(2,'0')}</div>`;
-    grid.appendChild(div);
-  });
-  show('s-dex');
+async function startCam(){
+  stopCam();
+  const msg=document.getElementById('scan-msg');
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}
+    });
+    const v=document.getElementById('cam-video');
+    v.srcObject=camStream;
+    await v.play();
+
+    // BarcodeDetector 지원 여부 확인
+    if('BarcodeDetector' in window){
+      msg.textContent='QR을 화면 중앙에 맞춰보세요';
+      detector=new BarcodeDetector({formats:['qr_code']});
+      camTimer=setInterval(scanWithDetector,300);
+    } else {
+      // 미지원 시 jsQR 폴백
+      msg.textContent='QR을 화면 중앙에 맞춰보세요 (호환모드)';
+      loadJsQR(()=>{
+        camTimer=setInterval(scanWithJsQR,200);
+      });
+    }
+  } catch(e){
+    msg.textContent='카메라 권한을 허용해주세요';
+  }
 }
 
-function doCapture(id,d){
+function loadJsQR(cb){
+  if(window.jsQR){cb();return;}
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
+  s.onload=cb;
+  document.head.appendChild(s);
+}
+
+async function scanWithDetector(){
+  if(cooldown)return;
+  const v=document.getElementById('cam-video');
+  if(!v.videoWidth)return;
+  try{
+    const codes=await detector.detect(v);
+    if(codes.length>0){
+      handleQR(codes[0].rawValue);
+    }
+  }catch(e){}
+}
+
+function scanWithJsQR(){
+  if(cooldown)return;
+  const v=document.getElementById('cam-video');
+  const c=document.getElementById('cam-canvas');
+  if(!v.videoWidth)return;
+  c.width=v.videoWidth;c.height=v.videoHeight;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.drawImage(v,0,0);
+  const img=ctx.getImageData(0,0,c.width,c.height);
+  const code=jsQR(img.data,c.width,c.height,{inversionAttempts:'attemptBoth'});
+  if(code)handleQR(code.data);
+}
+
+function handleQR(data){
+  if(cooldown)return;
+  cooldown=true;
+  document.getElementById('scan-msg').textContent='✅ QR 인식: '+data.substring(0,30);
+  const match=data.match(/[?&]animal=([a-z]+)/);
+  if(match&&ANIMALS[match[1]]){
+    stopCam();
+    doCapture(match[1]);
+  } else {
+    document.getElementById('scan-msg').textContent='⚠️ 동물 QR이 아니에요!';
+    setTimeout(()=>{cooldown=false;},2000);
+  }
+}
+
+function stopCam(){
+  if(camTimer){clearInterval(camTimer);camTimer=null;}
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+}
+
+function doCapture(id){
   const a=ANIMALS[id];
-  const isNew=!(d.caught||[]).includes(id);
-  if(isNew){d.caught.push(id);save(d);}
-  setTopbars(d);
+  const isNew=!player.caught.includes(id);
+  if(isNew){player.caught.push(id);savePlayer();}
+  setTopbars();
   const c=document.getElementById('cap-content');
   if(isNew){
     c.innerHTML=`
@@ -171,7 +237,7 @@ function doCapture(id,d){
       <div class="cap-title">${a.name} 포획!</div>
       <div class="cap-desc">${a.desc}</div>
       <div class="cap-new">🎉 새로운 동물 발견!</div>`;
-    if(d.caught.length===Object.keys(ANIMALS).length)
+    if(player.caught.length===Object.keys(ANIMALS).length)
       setTimeout(()=>toast('🏆 모든 동물 포획 완료!'),600);
   }else{
     c.innerHTML=`
@@ -184,29 +250,34 @@ function doCapture(id,d){
   show('s-capture');
 }
 
+function goDex(){
+  stopCam();
+  setTopbars();
+  document.getElementById('dx-bar').textContent=player.caught.length+'마리 / '+Object.keys(ANIMALS).length+'마리 발견';
+  const grid=document.getElementById('dex-grid');
+  grid.innerHTML='';
+  Object.entries(ANIMALS).forEach(([id,a],i)=>{
+    const ok=player.caught.includes(id);
+    const div=document.createElement('div');
+    div.className='dex-card'+(ok?' caught':' unknown');
+    div.innerHTML=`<span class="dex-emoji">${a.emoji}</span><div class="dex-label">${ok?a.name:'???'}</div><div class="dex-num">No.${String(i+1).padStart(2,'0')}</div>`;
+    grid.appendChild(div);
+  });
+  show('s-dex');
+}
+
 function resetGame(){
   if(!confirm('처음부터 다시 시작할까요?'))return;
-  try{localStorage.removeItem(KEY);}catch(e){}
+  stopCam();
+  player=null;
+  sessionStorage.clear();
   document.getElementById('name-input').value='';
   show('s-start');
 }
 
-// 페이지 로드 시 animal 파라미터 처리
+// 초기 로드 - 항상 시작화면
 window.addEventListener('load',()=>{
-  const animal=new URLSearchParams(location.search).get('animal');
-  const d=load();
-  if(animal&&ANIMALS[animal]){
-    if(d&&d.name){
-      doCapture(animal,d);
-    } else {
-      // 이름 없으면 시작화면 + 파라미터 기억
-      show('s-start');
-    }
-  } else if(d&&d.name){
-    goHunt();
-  } else {
-    show('s-start');
-  }
+  show('s-start');
 });
 </script>
 </body>
