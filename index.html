@@ -109,7 +109,19 @@ const ANIMALS={
   cat:{emoji:'🐱',name:'냥냥이',desc:'새침하지만 사실 엄청 친해지고 싶어요.'},
   star:{emoji:'🦄',name:'반짝이',desc:'별빛으로 만들어진 신비로운 유니콘!'},
   octopus:{emoji:'🐙',name:'문어몽',desc:'다리가 8개! 뭐든 척척 잡아드려요.'},
-  miss:{emoji:'❓',name:'꽝!',desc:'동물이 도망갔어요!',isMiss:true}
+  lion:{emoji:'🦁',name:'사자왕',desc:'백수의 왕! 갈기가 멋있어요.'},
+  panda:{emoji:'🐼',name:'판다롱',desc:'대나무를 엄청 좋아하는 귀요미!'},
+  dragon:{emoji:'🐲',name:'드래곤이',desc:'하늘을 나는 신비로운 용이에요.'},
+  hamster:{emoji:'🐹',name:'햄찌',desc:'볼 주머니에 뭐든 넣는 귀여운 친구!'},
+  owl:{emoji:'🦉',name:'부엉부엉',desc:'밤의 수호자! 눈이 엄청 크답니다.'},
+  dolphin:{emoji:'🐬',name:'돌핀이',desc:'바다의 악동! 점프를 잘 해요.'},
+  turtle:{emoji:'🐢',name:'거북이',desc:'느리지만 끝까지 포기하지 않아요!'},
+  chick:{emoji:'🐥',name:'삐약이',desc:'막 태어난 아기 병아리예요. 너무 귀여워요!'},
+  koala:{emoji:'🐨',name:'코알라몽',desc:'유칼립투스만 먹는 호주 친구!'},
+  crab:{emoji:'🦀',name:'집게리',desc:'집게발로 뭐든 집을 수 있어요!'},
+  elephant:{emoji:'🐘',name:'코끼리킹',desc:'코가 엄청 길어요. 기억력도 최고!'},
+  wolf:{emoji:'🐺',name:'늑대별',desc:'달밤에 우우~ 노래하는 멋진 친구!'},
+  miss:{emoji:'❓',name:'동물을 놓쳤어요!',desc:'동물이 도망갔어요!',isMiss:true}
 };
 
 var player = null;
@@ -152,20 +164,22 @@ function goScan(){
 function startCam(){
   stopCam();
   var msg=document.getElementById('scan-msg');
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}})
+  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  var constraints={video:{facingMode:'environment'}};
+  if(!isIOS){constraints.video.width={ideal:1280};constraints.video.height={ideal:720};}
+  navigator.mediaDevices.getUserMedia(constraints)
   .then(function(s){
     camStream=s;
     var v=document.getElementById('cam-video');
     v.srcObject=s;
     v.play();
-    if('BarcodeDetector' in window){
-      msg.textContent='QR을 화면 중앙에 맞춰보세요';
+    msg.textContent='QR을 화면 중앙에 맞춰보세요';
+    if(!isIOS&&'BarcodeDetector' in window){
       detector=new BarcodeDetector({formats:['qr_code']});
       camTimer=setInterval(scanWithDetector,300);
     } else {
-      msg.textContent='QR을 화면 중앙에 맞춰보세요';
       loadJsQR(function(){
-        camTimer=setInterval(scanWithJsQR,200);
+        camTimer=setInterval(scanWithJsQR,150);
       });
     }
   })
@@ -232,7 +246,7 @@ function doCapture(id){
   if(isMiss){
     var msgs=['바람만 쐤어요... 다음엔 잡을 수 있을 거예요!','나뭇잎만 흔들렸어요. 동물이 도망갔나봐요!','발자국만 남아있어요. 조금 늦었나봐요!','동물이 숨어버렸어요. 다른 곳을 찾아봐요!','땅굴로 도망갔어요! 다음엔 더 빨리 찾아봐요!'];
     var msg=msgs[Math.floor(Math.random()*msgs.length)];
-    c.innerHTML='<div class="already"><img src="logo.png" style="width:80px;height:80px;object-fit:contain;margin-bottom:8px"><p style="color:#e53935">꽝! 놓쳤어요!</p><small>'+msg+'</small></div>';
+    c.innerHTML='<div class="already"><img src="logo.png" style="width:80px;height:80px;object-fit:contain;margin-bottom:8px"><p style="color:#e53935">동물을 놓쳤어요!</p><small>'+msg+'</small></div>';
   } else if(isNew){
     c.innerHTML='<span class="sparkle">✨</span><span class="cap-emoji">'+a.emoji+'</span><div class="cap-title">'+a.name+' 포획!</div><div class="cap-desc">'+a.desc+'</div><div class="cap-new">🎉 새로운 동물 발견!</div>';
     var realAnimals=Object.keys(ANIMALS).filter(function(k){return !ANIMALS[k].isMiss;});
@@ -256,7 +270,7 @@ function goDex(){
     var div=document.createElement('div');
     div.className='dex-card'+(ok?' caught':' unknown');
     if(a.isMiss){
-      div.innerHTML='<img src="logo.png" style="width:32px;height:32px;object-fit:contain;margin-bottom:4px;'+(ok?'':'filter:grayscale(1);opacity:.35')+'"><div class="dex-label">'+(ok?'꽝':'???')+'</div><div class="dex-num">No.'+String(i+1).padStart(2,'0')+'</div>';
+      div.innerHTML='<img src="logo.png" style="width:32px;height:32px;object-fit:contain;margin-bottom:4px;'+(ok?'':'filter:grayscale(1);opacity:.35')+'"><div class="dex-label">'+(ok?'놓쳤어요':'???')+'</div><div class="dex-num">No.'+String(i+1).padStart(2,'0')+'</div>';
     } else {
       div.innerHTML='<span class="dex-emoji">'+a.emoji+'</span><div class="dex-label">'+(ok?a.name:'???')+'</div><div class="dex-num">No.'+String(i+1).padStart(2,'0')+'</div>';
     }
