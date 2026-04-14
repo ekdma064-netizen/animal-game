@@ -152,12 +152,12 @@ function goScan(){
 
 function startCam(){
   if(camStream)return;
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}})
     .then(s=>{
       camStream=s;
       const v=document.getElementById('qr-video');
       v.srcObject=s;v.play();
-      camTimer=setInterval(scanFrame,150);
+      camTimer=setInterval(scanFrame,200);
     })
     .catch(()=>{document.getElementById('scan-status').textContent='카메라 권한을 허용해주세요';});
 }
@@ -188,6 +188,20 @@ function scanFrame(){
       doCapture(match[1]);
     } else {
       st.textContent='⚠️ 동물 QR 아님: '+code.data.substring(0,30);
+    }
+  } else {
+    // 절반 크기로 다시 시도
+    const c2=document.createElement('canvas');
+    c2.width=Math.floor(c.width/2);c2.height=Math.floor(c.height/2);
+    const ctx2=c2.getContext('2d');
+    ctx2.drawImage(v,0,0,c2.width,c2.height);
+    const img2=ctx2.getImageData(0,0,c2.width,c2.height);
+    const code2=jsQR(img2.data,c2.width,c2.height,{inversionAttempts:'attemptBoth'});
+    if(code2){
+      lastScan=now;
+      st.textContent='✅ QR감지(소): '+code2.data.substring(0,40);
+      const match=code2.data.match(/[?&]animal=([a-z]+)/);
+      if(match&&ANIMALS[match[1]]){stopCam();doCapture(match[1]);}
     }
   }
 }
