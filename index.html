@@ -112,27 +112,27 @@ input[type=text]:focus{border-color:#2d5be3}
 
 <script>
 const ANIMALS={
-  fox:{emoji:'🦊',name:'꼬미여우',desc:'장난꾸러기 여우! 꼬리가 아주 복슬복슬해요.'},
-  rabbit:{emoji:'🐰',name:'토끼별',desc:'달에서 온 토끼. 귀가 엄청 길어요!'},
-  penguin:{emoji:'🐧',name:'펭이',desc:'남극에서 온 친구. 춤을 아주 잘 춰요!'},
-  frog:{emoji:'🐸',name:'초록이',desc:'연못의 수호자! 점프 실력이 최고예요.'},
-  bear:{emoji:'🐻',name:'구름곰',desc:'구름 위에서 내려온 포근한 곰.'},
-  cat:{emoji:'🐱',name:'냥냥이',desc:'새침하지만 사실 엄청 친해지고 싶어요.'},
-  star:{emoji:'🦄',name:'반짝이',desc:'별빛으로 만들어진 신비로운 유니콘!'},
-  octopus:{emoji:'🐙',name:'문어몽',desc:'다리가 8개! 뭐든 척척 잡아드려요.'},
-  lion:{emoji:'🦁',name:'사자왕',desc:'백수의 왕! 갈기가 멋있어요.'},
-  panda:{emoji:'🐼',name:'판다롱',desc:'대나무를 엄청 좋아하는 귀요미!'},
-  dragon:{emoji:'🐲',name:'드래곤이',desc:'하늘을 나는 신비로운 용이에요.'},
-  hamster:{emoji:'🐹',name:'햄찌',desc:'볼 주머니에 뭐든 넣는 귀여운 친구!'},
-  owl:{emoji:'🦉',name:'부엉부엉',desc:'밤의 수호자! 눈이 엄청 크답니다.'},
-  dolphin:{emoji:'🐬',name:'돌핀이',desc:'바다의 악동! 점프를 잘 해요.'},
-  turtle:{emoji:'🐢',name:'거북이',desc:'느리지만 끝까지 포기하지 않아요!'},
-  chick:{emoji:'🐥',name:'삐약이',desc:'막 태어난 아기 병아리예요. 너무 귀여워요!'},
-  koala:{emoji:'🐨',name:'코알라몽',desc:'유칼립투스만 먹는 호주 친구!'},
-  crab:{emoji:'🦀',name:'집게리',desc:'집게발로 뭐든 집을 수 있어요!'},
-  elephant:{emoji:'🐘',name:'코끼리킹',desc:'코가 엄청 길어요. 기억력도 최고!'},
-  wolf:{emoji:'🐺',name:'늑대별',desc:'달밤에 우우~ 노래하는 멋진 친구!'},
-  miss:{emoji:'❓',name:'동물을 놓쳤어요!',desc:'동물이 도망갔어요!',isMiss:true}
+  fox:{emoji:'🦊',name:'꼬미여우',desc:'장난꾸러기 여우! 꼬리가 아주 복슬복슬해요.',anim:'anim-shake'},
+  rabbit:{emoji:'🐰',name:'토끼별',desc:'달에서 온 토끼. 귀가 엄청 길어요!',anim:'anim-bounce'},
+  penguin:{emoji:'🐧',name:'펭이',desc:'남극에서 온 친구. 춤을 아주 잘 춰요!',anim:'anim-wiggle'},
+  frog:{emoji:'🐸',name:'초록이',desc:'연못의 수호자! 점프 실력이 최고예요.',anim:'anim-jump'},
+  bear:{emoji:'🐻',name:'구름곰',desc:'구름 위에서 내려온 포근한 곰.',anim:'anim-stomp'},
+  cat:{emoji:'🐱',name:'냥냥이',desc:'새침하지만 사실 엄청 친해지고 싶어요.',anim:'anim-float'},
+  star:{emoji:'🦄',name:'반짝이',desc:'별빛으로 만들어진 신비로운 유니콘!',anim:'anim-spin'},
+  octopus:{emoji:'🐙',name:'문어몽',desc:'다리가 8개! 뭐든 척척 잡아드려요.',anim:'anim-wiggle'},
+  lion:{emoji:'🦁',name:'사자왕',desc:'백수의 왕! 갈기가 멋있어요.',anim:'anim-stomp'},
+  panda:{emoji:'🐼',name:'판다롱',desc:'대나무를 엄청 좋아하는 귀요미!',anim:'anim-roll'},
+  dragon:{emoji:'🐲',name:'드래곤이',desc:'하늘을 나는 신비로운 용이에요.',anim:'anim-fly'},
+  hamster:{emoji:'🐹',name:'햄찌',desc:'볼 주머니에 뭐든 넣는 귀여운 친구!',anim:'anim-shake'},
+  owl:{emoji:'🦉',name:'부엉부엉',desc:'밤의 수호자! 눈이 엄청 크답니다.',anim:'anim-float'},
+  dolphin:{emoji:'🐬',name:'돌핀이',desc:'바다의 악동! 점프를 잘 해요.',anim:'anim-swim'},
+  turtle:{emoji:'🐢',name:'거북이',desc:'느리지만 끝까지 포기하지 않아요!',anim:'anim-float'},
+  chick:{emoji:'🐥',name:'삐약이',desc:'막 태어난 아기 병아리예요. 너무 귀여워요!',anim:'anim-bounce'},
+  koala:{emoji:'🐨',name:'코알라몽',desc:'유칼립투스만 먹는 호주 친구!',anim:'anim-float'},
+  crab:{emoji:'🦀',name:'집게리',desc:'집게발로 뭐든 집을 수 있어요!',anim:'anim-shake'},
+  elephant:{emoji:'🐘',name:'코끼리킹',desc:'코가 엄청 길어요. 기억력도 최고!',anim:'anim-stomp'},
+  wolf:{emoji:'🐺',name:'늑대별',desc:'달밤에 우우~ 노래하는 멋진 친구!',anim:'anim-jump'},
+  miss:{emoji:'❓',name:'동물을 놓쳤어요!',desc:'동물이 도망갔어요!',isMiss:true,anim:''}
 };
 
 var player = null;
@@ -244,7 +244,22 @@ function handleQR(data){
       // AR 연출
       pendingCapture=id;
       document.getElementById('scan-overlay').style.display='none';
-      document.getElementById('ar-animal').textContent=a.emoji;
+      var arAnimal=document.getElementById('ar-animal');
+      arAnimal.textContent=a.emoji;
+      arAnimal.className=a.anim;
+      // 등장 애니메이션 먼저
+      arAnimal.style.animation='none';
+      arAnimal.style.opacity='0';
+      arAnimal.style.transform='scale(0) translateY(60px)';
+      setTimeout(function(){
+        arAnimal.style.transition='transform 0.4s cubic-bezier(.17,.67,.35,1.3), opacity 0.3s';
+        arAnimal.style.opacity='1';
+        arAnimal.style.transform='scale(1) translateY(0)';
+        setTimeout(function(){
+          arAnimal.style.transition='';
+          arAnimal.className=a.anim;
+        },400);
+      },50);
       document.getElementById('ar-name').textContent=a.name+' 출현!';
       document.getElementById('ar-overlay').style.display='flex';
       document.getElementById('scan-msg').textContent='화면을 탭해서 포획하세요!';
