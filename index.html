@@ -28,6 +28,12 @@ input[type=text]:focus{border-color:#2d5be3}
 .scan-box{width:180px;height:180px;border:3px solid #fff;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.4);position:relative}
 .scan-line{position:absolute;left:4px;right:4px;height:2px;background:#2d5be3;border-radius:2px;animation:sl 2s linear infinite}
 @keyframes sl{0%{top:4px}100%{top:calc(100% - 4px)}}
+#ar-overlay{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.35);cursor:pointer;z-index:5}
+#ar-animal{font-size:100px;animation:ar-pop .5s cubic-bezier(.17,.67,.35,1.3);display:block;filter:drop-shadow(0 4px 16px rgba(0,0,0,.5))}
+@keyframes ar-pop{0%{transform:scale(0) translateY(60px);opacity:0}60%{transform:scale(1.2) translateY(-10px);opacity:1}100%{transform:scale(1) translateY(0);opacity:1}}
+#ar-name{color:#fff;font-size:20px;font-weight:700;margin-top:8px;text-shadow:0 2px 8px rgba(0,0,0,.7)}
+#ar-hint{color:rgba(255,255,255,.8);font-size:13px;margin-top:6px;animation:blink 1s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
 #scan-msg{font-size:13px;color:#555;text-align:center;margin-bottom:8px;min-height:18px}
 .cap-emoji{font-size:100px;animation:pop .5s ease-out;display:block;text-align:center;margin-bottom:4px}
 @keyframes pop{0%{transform:scale(0) rotate(-15deg);opacity:0}70%{transform:scale(1.2) rotate(4deg)}100%{transform:scale(1);opacity:1}}
@@ -70,7 +76,12 @@ input[type=text]:focus{border-color:#2d5be3}
   <p class="sub">교실에 붙어있는 QR에<br>카메라를 가까이 대세요</p>
   <div id="cam-wrap">
     <video id="cam-video" autoplay playsinline muted></video>
-    <div class="scan-overlay"><div class="scan-box"><div class="scan-line"></div></div></div>
+    <div class="scan-overlay" id="scan-overlay"><div class="scan-box"><div class="scan-line"></div></div></div>
+    <div id="ar-overlay" onclick="confirmCapture()">
+      <span id="ar-animal"></span>
+      <div id="ar-name"></div>
+      <div id="ar-hint">화면을 탭해서 포획!</div>
+    </div>
   </div>
   <canvas id="cam-canvas" style="display:none"></canvas>
   <p id="scan-msg">카메라 시작 중...</p>
@@ -129,6 +140,7 @@ var camStream = null;
 var camTimer = null;
 var cooldown = false;
 var detector = null;
+var pendingCapture = null;
 
 function savePlayer(){sessionStorage.setItem('player',JSON.stringify(player));}
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
@@ -223,12 +235,34 @@ function handleQR(data){
   cooldown=true;
   var animalMatch=data.match(/[?&]animal=([a-z]+)/);
   if(animalMatch&&ANIMALS[animalMatch[1]]){
-    stopCam();
-    doCapture(animalMatch[1]);
+    var id=animalMatch[1];
+    var a=ANIMALS[id];
+    if(a.isMiss){
+      stopCam();
+      doCapture(id);
+    } else {
+      // AR 연출
+      pendingCapture=id;
+      document.getElementById('scan-overlay').style.display='none';
+      document.getElementById('ar-animal').textContent=a.emoji;
+      document.getElementById('ar-name').textContent=a.name+' 출현!';
+      document.getElementById('ar-overlay').style.display='flex';
+      document.getElementById('scan-msg').textContent='화면을 탭해서 포획하세요!';
+    }
   } else {
     document.getElementById('scan-msg').textContent='⚠️ 동물 QR이 아니에요!';
     setTimeout(function(){cooldown=false;},2000);
   }
+}
+
+function confirmCapture(){
+  if(!pendingCapture)return;
+  var id=pendingCapture;
+  pendingCapture=null;
+  document.getElementById('ar-overlay').style.display='none';
+  document.getElementById('scan-overlay').style.display='flex';
+  stopCam();
+  doCapture(id);
 }
 
 function stopCam(){
