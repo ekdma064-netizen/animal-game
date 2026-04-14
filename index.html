@@ -108,15 +108,9 @@ const ANIMALS={
   bear:{emoji:'🐻',name:'구름곰',desc:'구름 위에서 내려온 포근한 곰.'},
   cat:{emoji:'🐱',name:'냥냥이',desc:'새침하지만 사실 엄청 친해지고 싶어요.'},
   star:{emoji:'🦄',name:'반짝이',desc:'별빛으로 만들어진 신비로운 유니콘!'},
-  octopus:{emoji:'🐙',name:'문어몽',desc:'다리가 8개! 뭐든 척척 잡아드려요.'}
+  octopus:{emoji:'🐙',name:'문어몽',desc:'다리가 8개! 뭐든 척척 잡아드려요.'},
+  miss:{emoji:'❓',name:'꽝!',desc:'동물이 도망갔어요!',isMiss:true}
 };
-const MISS=[
-  {emoji:'💨',msg:'바람만 쐤어요... 다음엔 잡을 수 있을 거예요!'},
-  {emoji:'🍃',msg:'나뭇잎만 흔들렸어요. 동물이 도망갔나봐요!'},
-  {emoji:'👣',msg:'발자국만 남아있어요. 조금 늦었나봐요!'},
-  {emoji:'😴',msg:'동물이 숨어버렸어요. 다른 곳을 찾아봐요!'},
-  {emoji:'🕳️',msg:'땅굴로 도망갔어요! 다음엔 더 빨리 찾아봐요!'}
-];
 
 var player = null;
 var camStream = null;
@@ -214,11 +208,7 @@ function handleQR(data){
   if(cooldown)return;
   cooldown=true;
   var animalMatch=data.match(/[?&]animal=([a-z]+)/);
-  var missMatch=data.match(/[?&]animal=miss/);
-  if(missMatch||data.indexOf('?animal=miss')!==-1||data.indexOf('&animal=miss')!==-1){
-    stopCam();
-    doMiss();
-  } else if(animalMatch&&ANIMALS[animalMatch[1]]){
+  if(animalMatch&&ANIMALS[animalMatch[1]]){
     stopCam();
     doCapture(animalMatch[1]);
   } else {
@@ -232,22 +222,22 @@ function stopCam(){
   if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
 }
 
-function doMiss(){
-  var m=MISS[Math.floor(Math.random()*MISS.length)];
-  var c=document.getElementById('cap-content');
-  c.innerHTML='<div class="already"><span class="em">'+m.emoji+'</span><p>꽝! 놓쳤어요!</p><small>'+m.msg+'</small></div>';
-  show('s-capture');
-}
-
 function doCapture(id){
   var a=ANIMALS[id];
+  var isMiss=a.isMiss===true;
   var isNew=player.caught.indexOf(id)===-1;
   if(isNew){player.caught.push(id);savePlayer();}
   setTopbars();
   var c=document.getElementById('cap-content');
-  if(isNew){
+  if(isMiss){
+    var msgs=['바람만 쐤어요... 다음엔 잡을 수 있을 거예요!','나뭇잎만 흔들렸어요. 동물이 도망갔나봐요!','발자국만 남아있어요. 조금 늦었나봐요!','동물이 숨어버렸어요. 다른 곳을 찾아봐요!','땅굴로 도망갔어요! 다음엔 더 빨리 찾아봐요!'];
+    var msg=msgs[Math.floor(Math.random()*msgs.length)];
+    c.innerHTML='<div class="already"><img src="logo.png" style="width:80px;height:80px;object-fit:contain;margin-bottom:8px"><p style="color:#e53935">꽝! 놓쳤어요!</p><small>'+msg+'</small></div>';
+  } else if(isNew){
     c.innerHTML='<span class="sparkle">✨</span><span class="cap-emoji">'+a.emoji+'</span><div class="cap-title">'+a.name+' 포획!</div><div class="cap-desc">'+a.desc+'</div><div class="cap-new">🎉 새로운 동물 발견!</div>';
-    if(player.caught.length===Object.keys(ANIMALS).length)setTimeout(function(){toast('🏆 모든 동물 포획 완료!');},600);
+    var realAnimals=Object.keys(ANIMALS).filter(function(k){return !ANIMALS[k].isMiss;});
+    var caughtReal=player.caught.filter(function(k){return !ANIMALS[k].isMiss;});
+    if(caughtReal.length===realAnimals.length)setTimeout(function(){toast('🏆 모든 동물 포획 완료!');},600);
   } else {
     c.innerHTML='<div class="already"><span class="em">'+a.emoji+'</span><p>'+a.name+' - 이미 포획했어요!</p><small>다른 QR을 찾아보세요</small></div>';
   }
@@ -265,7 +255,11 @@ function goDex(){
     var ok=player.caught.indexOf(id)!==-1;
     var div=document.createElement('div');
     div.className='dex-card'+(ok?' caught':' unknown');
-    div.innerHTML='<span class="dex-emoji">'+a.emoji+'</span><div class="dex-label">'+(ok?a.name:'???')+'</div><div class="dex-num">No.'+String(i+1).padStart(2,'0')+'</div>';
+    if(a.isMiss){
+      div.innerHTML='<img src="logo.png" style="width:32px;height:32px;object-fit:contain;margin-bottom:4px;'+(ok?'':'filter:grayscale(1);opacity:.35')+'"><div class="dex-label">'+(ok?'꽝':'???')+'</div><div class="dex-num">No.'+String(i+1).padStart(2,'0')+'</div>';
+    } else {
+      div.innerHTML='<span class="dex-emoji">'+a.emoji+'</span><div class="dex-label">'+(ok?a.name:'???')+'</div><div class="dex-num">No.'+String(i+1).padStart(2,'0')+'</div>';
+    }
     grid.appendChild(div);
   });
   show('s-dex');
