@@ -138,7 +138,8 @@ function onStart(){
   goScan();
 }
 
-async function goScan(){
+async async function goScan(){
+  cooldown=false;
   setTopbars();
   show('s-scan');
   await startCam();
