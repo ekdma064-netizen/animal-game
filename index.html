@@ -22,28 +22,49 @@ input[type=text]:focus{border-color:#2d5be3}
 .tb-name{font-size:14px;font-weight:700;color:#2d5be3}
 .tb-count{font-size:13px;color:#666}
 .has-topbar{padding-top:60px}
+
+/* 스캔 카메라 */
 #cam-wrap{position:relative;width:100%;max-width:340px;border-radius:16px;overflow:hidden;background:#000;margin-bottom:10px}
 #cam-video{width:100%;display:block;max-height:260px;object-fit:cover}
-.scan-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.scan-frame{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .scan-box{width:180px;height:180px;border:3px solid #fff;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.4);position:relative}
 .scan-line{position:absolute;left:4px;right:4px;height:2px;background:#2d5be3;border-radius:2px;animation:sl 2s linear infinite}
 @keyframes sl{0%{top:4px}100%{top:calc(100% - 4px)}}
-#ar-overlay{position:absolute;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.25);z-index:5;padding-bottom:12px}
-#ar-animal{font-size:80px;position:absolute;cursor:pointer;user-select:none;line-height:1}
-#ar-label{color:#fff;font-size:16px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.8);text-align:center;position:relative;z-index:6}
-#ar-hint{color:rgba(255,255,255,.85);font-size:12px;text-align:center;animation:blink 0.8s ease-in-out infinite;position:relative;z-index:6}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-@keyframes idle-bounce{0%,100%{transform:scaleY(1) scaleX(1)}40%{transform:scaleY(1.2) scaleX(0.85)}70%{transform:scaleY(0.9) scaleX(1.1)}}
-@keyframes idle-spin{0%{transform:rotate(-15deg)}50%{transform:rotate(15deg)}100%{transform:rotate(-15deg)}}
-@keyframes idle-shake{0%,100%{transform:rotate(0)}30%{transform:rotate(-20deg)}70%{transform:rotate(20deg)}}
-@keyframes idle-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes idle-wiggle{0%,100%{transform:scaleX(1) rotate(0)}50%{transform:scaleX(1.2) rotate(10deg)}}
-.idle-bounce{animation:idle-bounce 0.5s ease-in-out infinite}
-.idle-spin{animation:idle-spin 0.6s ease-in-out infinite}
-.idle-shake{animation:idle-shake 0.4s ease-in-out infinite}
-.idle-float{animation:idle-float 1.2s ease-in-out infinite}
-.idle-wiggle{animation:idle-wiggle 0.5s ease-in-out infinite}
-#scan-msg{font-size:13px;color:#555;text-align:center;margin-bottom:8px;min-height:18px}
+
+/* AR 전체화면 */
+#ar-screen{display:none;position:fixed;inset:0;z-index:100;background:#000;overflow:hidden}
+#ar-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#ar-animal{position:absolute;font-size:90px;cursor:pointer;user-select:none;line-height:1;
+  filter:drop-shadow(0 6px 20px rgba(0,0,0,.7));
+  transform:translate(-50%,-50%)}
+#ar-animal.popping{animation:ar-pop 0.5s cubic-bezier(.17,.67,.35,1.5) forwards}
+@keyframes ar-pop{0%{transform:translate(-50%,-50%) scale(0) rotate(-20deg)}60%{transform:translate(-50%,-50%) scale(1.3) rotate(5deg)}100%{transform:translate(-50%,-50%) scale(1) rotate(0)}}
+@keyframes idle-bounce{0%,100%{margin-top:0}40%{margin-top:-16px}70%{margin-top:-8px}}
+@keyframes idle-spin{0%,100%{rotate:0deg}50%{rotate:20deg}}
+@keyframes idle-shake{0%,100%{rotate:0deg}30%{rotate:-15deg}70%{rotate:15deg}}
+@keyframes idle-float{0%,100%{margin-top:0}50%{margin-top:-12px}}
+@keyframes idle-wiggle{0%,100%{scale:1}50%{scale:1.15}}
+.idle-bounce{animation:idle-bounce 0.6s ease-in-out infinite}
+.idle-spin{animation:idle-spin 0.7s ease-in-out infinite}
+.idle-shake{animation:idle-shake 0.5s ease-in-out infinite}
+.idle-float{animation:idle-float 1.4s ease-in-out infinite}
+.idle-wiggle{animation:idle-wiggle 0.6s ease-in-out infinite}
+
+/* AR HUD */
+#ar-hud{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(0,0,0,.5),transparent)}
+#ar-title{color:#fff;font-size:16px;font-weight:700;text-shadow:0 2px 6px rgba(0,0,0,.8)}
+#ar-close-btn{background:rgba(0,0,0,.5);color:#fff;border:1.5px solid rgba(255,255,255,.4);font-size:18px;width:38px;height:38px;border-radius:50%;cursor:pointer}
+#ar-hint{position:absolute;bottom:0;left:0;right:0;padding:14px;text-align:center;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);transition:background .3s}
+#ar-hint.inview{background:linear-gradient(to top,rgba(45,91,227,.7),transparent)}
+#ar-radar{position:absolute;bottom:70px;right:16px;width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.3)}
+#ar-radar-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:#ff4455;box-shadow:0 0 8px #ff4455;transform:translate(-50%,-50%)}
+#ar-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#ar-crosshair{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:.5}
+#ar-crosshair::before,#ar-crosshair::after{content:'';position:absolute;background:#fff}
+#ar-crosshair::before{width:1px;height:40px;left:50%;transform:translateX(-50%)}
+#ar-crosshair::after{height:1px;width:40px;top:50%;transform:translateY(-50%)}
+
+/* 포획/도감 */
 .cap-emoji{font-size:100px;animation:pop .5s ease-out;display:block;text-align:center;margin-bottom:4px}
 @keyframes pop{0%{transform:scale(0) rotate(-15deg);opacity:0}70%{transform:scale(1.2) rotate(4deg)}100%{transform:scale(1);opacity:1}}
 .cap-title{font-size:22px;font-weight:700;color:#2d5be3;text-align:center;margin-bottom:6px}
@@ -65,10 +86,12 @@ input[type=text]:focus{border-color:#2d5be3}
 .count-bar{background:#e0eaff;border-radius:10px;padding:7px 16px;font-size:14px;font-weight:700;color:#2d5be3;margin-bottom:16px}
 .toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 20px;border-radius:16px;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:999;white-space:nowrap}
 .toast.show{opacity:1}
+#scan-msg{font-size:13px;color:#555;text-align:center;margin-bottom:8px;min-height:18px}
 </style>
 </head>
 <body>
 
+<!-- 시작 -->
 <div class="screen active" id="s-start">
   <img src="logo.png" style="width:90px;height:90px;margin-bottom:10px;object-fit:contain">
   <h1>교실 동물 탐험대</h1>
@@ -77,24 +100,35 @@ input[type=text]:focus{border-color:#2d5be3}
   <button class="btn btn-primary" onclick="onStart()">탐험 시작!</button>
 </div>
 
+<!-- 스캔 -->
 <div class="screen has-topbar" id="s-scan">
   <div class="topbar"><span class="tb-name" id="sc-name"></span><span class="tb-count" id="sc-count"></span></div>
   <h2>QR 코드를 찾아보세요!</h2>
   <p class="sub">교실에 붙어있는 QR에<br>카메라를 가까이 대세요</p>
   <div id="cam-wrap">
     <video id="cam-video" autoplay playsinline muted></video>
-    <div class="scan-overlay" id="scan-frame"><div class="scan-box"><div class="scan-line"></div></div></div>
-    <div id="ar-overlay">
-      <span id="ar-animal" onclick="confirmCapture()"></span>
-      <div id="ar-label"></div>
-      <div id="ar-hint">동물을 탭해서 포획!</div>
-    </div>
+    <div class="scan-frame" id="scan-frame"><div class="scan-box"><div class="scan-line"></div></div></div>
   </div>
   <canvas id="cam-canvas" style="display:none"></canvas>
   <p id="scan-msg">카메라 시작 중...</p>
   <button class="btn btn-secondary" onclick="goDex()">도감 보기</button>
 </div>
 
+<!-- AR 전체화면 -->
+<div id="ar-screen">
+  <video id="ar-bg" autoplay playsinline muted></video>
+  <div id="ar-crosshair"></div>
+  <span id="ar-animal" onclick="confirmCapture()"></span>
+  <div id="ar-radar"><div id="ar-radar-dot"></div></div>
+  <div id="ar-hud">
+    <div id="ar-title"></div>
+    <button id="ar-close-btn" onclick="closeAR()">✕</button>
+  </div>
+  <div id="ar-hint">태블릿을 기울여 동물을 쫓아가세요!</div>
+  <div id="ar-flash"></div>
+</div>
+
+<!-- 포획 결과 -->
 <div class="screen has-topbar" id="s-capture">
   <div class="topbar"><span class="tb-name" id="cp-name"></span><span class="tb-count" id="cp-count"></span></div>
   <div id="cap-content" style="width:100%;max-width:300px;text-align:center"></div>
@@ -102,6 +136,7 @@ input[type=text]:focus{border-color:#2d5be3}
   <button class="btn btn-secondary" onclick="goDex()">도감 보기</button>
 </div>
 
+<!-- 도감 -->
 <div class="screen has-topbar" id="s-dex">
   <div class="topbar"><span class="tb-name" id="dx-name"></span><span class="tb-count" id="dx-count"></span></div>
   <div style="width:100%;display:flex;flex-direction:column;align-items:center;padding:16px 16px 40px">
@@ -141,24 +176,25 @@ var ANIMALS={
 };
 
 var player=null;
-var camStream=null, camTimer=null, detector=null, cooldown=false;
-var pendingCapture=null, arTimer=null;
-var arX=50, arY=50, arVx=3, arVy=2;
+var camStream=null, camTimer=null, detector=null;
+var cooldown=false, pendingCapture=null;
+var arTimer=null, arWX=0, arWY=0, arVx=0, arVy=0;
+var gyroX=0, gyroY=0, lastGamma=null, lastBeta=null;
 
-function savePlayer(){sessionStorage.setItem('player',JSON.stringify(player));}
+function savePlayer(){sessionStorage.setItem('p',JSON.stringify(player));}
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
 function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
 function setTopbars(){
-  if(!player) return;
+  if(!player)return;
   var cnt=player.caught.length+'/'+Object.keys(ANIMALS).length+' 포획';
   ['sc','cp','dx'].forEach(function(p){
-    var n=document.getElementById(p+'-name');
-    var c=document.getElementById(p+'-count');
-    if(n) n.textContent=player.name+'의 탐험';
-    if(c) c.textContent=cnt;
+    var n=document.getElementById(p+'-name'), c=document.getElementById(p+'-count');
+    if(n)n.textContent=player.name+'의 탐험';
+    if(c)c.textContent=cnt;
   });
 }
 
+// ── 시작 ──
 function onStart(){
   var n=document.getElementById('name-input').value.trim();
   if(!n){toast('이름을 입력해 주세요!');return;}
@@ -168,12 +204,10 @@ function onStart(){
   goScan();
 }
 
+// ── 스캔 ──
 function goScan(){
-  cooldown=false;
-  pendingCapture=null;
-  stopArMove();
-  document.getElementById('ar-overlay').style.display='none';
-  document.getElementById('scan-frame').style.display='flex';
+  cooldown=false; pendingCapture=null;
+  stopArMove(); stopGyro();
   setTopbars();
   show('s-scan');
   startCam();
@@ -188,10 +222,9 @@ function startCam(){
   navigator.mediaDevices.getUserMedia(constraints).then(function(s){
     camStream=s;
     var v=document.getElementById('cam-video');
-    v.srcObject=s;
-    v.play();
+    v.srcObject=s; v.play();
     msg.textContent='QR을 화면 중앙에 맞춰보세요';
-    if(!isIOS && 'BarcodeDetector' in window){
+    if(!isIOS&&'BarcodeDetector' in window){
       detector=new BarcodeDetector({formats:['qr_code']});
       camTimer=setInterval(scanWithDetector,300);
     } else {
@@ -204,197 +237,39 @@ function loadJsQR(cb){
   if(window.jsQR){cb();return;}
   var s=document.createElement('script');
   s.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
-  s.onload=cb;
-  document.head.appendChild(s);
+  s.onload=cb; document.head.appendChild(s);
 }
 
 function scanWithDetector(){
-  if(cooldown) return;
+  if(cooldown)return;
   var v=document.getElementById('cam-video');
-  if(!v.videoWidth) return;
-  detector.detect(v).then(function(codes){
-    if(codes.length>0) handleQR(codes[0].rawValue);
-  }).catch(function(){});
+  if(!v.videoWidth)return;
+  detector.detect(v).then(function(codes){if(codes.length>0)handleQR(codes[0].rawValue);}).catch(function(){});
 }
 
 function scanWithJsQR(){
-  if(cooldown) return;
-  var v=document.getElementById('cam-video');
-  var c=document.getElementById('cam-canvas');
-  if(!v.videoWidth) return;
+  if(cooldown)return;
+  var v=document.getElementById('cam-video'), c=document.getElementById('cam-canvas');
+  if(!v.videoWidth)return;
   c.width=v.videoWidth; c.height=v.videoHeight;
   var ctx=c.getContext('2d',{willReadFrequently:true});
   ctx.drawImage(v,0,0);
-  var img=ctx.getImageData(0,0,c.width,c.height);
-  var code=jsQR(img.data,c.width,c.height,{inversionAttempts:'attemptBoth'});
-  if(code) handleQR(code.data);
+  var code=jsQR(ctx.getImageData(0,0,c.width,c.height).data,c.width,c.height,{inversionAttempts:'attemptBoth'});
+  if(code)handleQR(code.data);
 }
 
 function handleQR(data){
-  if(cooldown) return;
+  if(cooldown)return;
   cooldown=true;
   var m=data.match(/[?&]animal=([a-z]+)/);
-  if(m && ANIMALS[m[1]]){
-    var id=m[1];
-    var a=ANIMALS[id];
-    if(a.isMiss){
-      stopCam();
-      doCapture(id);
-    } else {
-      showAR(id,a);
-    }
+  if(m&&ANIMALS[m[1]]){
+    var id=m[1], a=ANIMALS[id];
+    if(a.isMiss){stopCam();doCapture(id);}
+    else{stopCam();showAR(id,a);}
   } else {
     document.getElementById('scan-msg').textContent='⚠️ 동물 QR이 아니에요!';
     setTimeout(function(){cooldown=false;},2000);
   }
-}
-
-var arWorldX=0, arWorldY=0; // 동물의 월드 좌표 (화면 중심 기준)
-var arGyroX=0, arGyroY=0;   // 자이로 누적값
-var arGyroSupport=false;
-
-function showAR(id,a){
-  pendingCapture=id;
-  document.getElementById('scan-frame').style.display='none';
-  document.getElementById('scan-msg').textContent='';
-
-  // AR 전체화면 카메라
-  var bg=document.getElementById('ar-video-bg');
-  bg.srcObject=camStream;
-
-  // 동물 초기 위치: 화면 중심에서 랜덤 방향으로 약간 벗어남
-  var angle=Math.random()*Math.PI*2;
-  var dist=80+Math.random()*120;
-  arWorldX=Math.cos(angle)*dist;
-  arWorldY=Math.sin(angle)*dist;
-  arGyroX=0; arGyroY=0;
-
-  var el=document.getElementById('ar-animal');
-  el.textContent=a.emoji;
-  el.className='';
-  document.getElementById('ar-name-tag').textContent=a.name+' 출현!';
-  document.getElementById('ar-overlay').style.display='block';
-
-  // 등장 애니메이션
-  updateARPosition();
-  el.style.transform+=' scale(0)';
-  el.style.transition='transform 0.4s cubic-bezier(.17,.67,.35,1.5)';
-  setTimeout(function(){
-    el.style.transform=el.style.transform.replace(' scale(0)','');
-    setTimeout(function(){
-      el.style.transition='';
-      el.className=a.idle;
-      startArMove(a,el);
-    },400);
-  },30);
-
-  // 자이로 이벤트
-  arGyroSupport=false;
-  if(window.DeviceOrientationEvent){
-    if(typeof DeviceOrientationEvent.requestPermission==='function'){
-      DeviceOrientationEvent.requestPermission().then(function(r){
-        if(r==='granted'){arGyroSupport=true;window.addEventListener('deviceorientation',onGyro);}
-      }).catch(function(){});
-    } else {
-      arGyroSupport=true;
-      window.addEventListener('deviceorientation',onGyro);
-    }
-  }
-}
-
-var lastGamma=null, lastBeta=null;
-function onGyro(e){
-  if(lastGamma===null){lastGamma=e.gamma||0;lastBeta=e.beta||0;return;}
-  var dg=(e.gamma||0)-lastGamma;
-  var db=(e.beta||0)-lastBeta;
-  lastGamma=e.gamma||0; lastBeta=e.beta||0;
-  // 기울기로 뷰포트 이동 (반대 방향 = 동물이 반대로 이동하는 것처럼)
-  arGyroX+=dg*3;
-  arGyroY+=db*3;
-  updateARPosition();
-}
-
-function updateARPosition(){
-  var el=document.getElementById('ar-animal');
-  var W=window.innerWidth, H=window.innerHeight;
-  var px=(W/2)+arWorldX-arGyroX;
-  var py=(H/2)+arWorldY-arGyroY;
-  el.style.left=px+'px';
-  el.style.top=py+'px';
-  el.style.transform='translate(-50%,-50%)';
-
-  // 레이더 업데이트
-  var dx=arWorldX-arGyroX, dy=arWorldY-arGyroY;
-  var dist=Math.sqrt(dx*dx+dy*dy);
-  var maxR=25;
-  var rx=35+Math.min(dx/10,maxR)*Math.sign(dx)*Math.min(Math.abs(dx/10),maxR)/maxR;
-  var ry=35+Math.min(dy/10,maxR)*Math.sign(dy)*Math.min(Math.abs(dy/10),maxR)/maxR;
-  var dot=document.getElementById('ar-radar-dot');
-  dot.style.left=Math.max(8,Math.min(62,rx))+'px';
-  dot.style.top=Math.max(8,Math.min(62,ry))+'px';
-
-  // 화면 안에 있으면 힌트 변경
-  var bar=document.getElementById('ar-hint-bar');
-  if(px>0&&px<W&&py>0&&py<H){
-    bar.textContent='동물을 탭해서 포획하세요!';
-    bar.style.background='rgba(45,91,227,.7)';
-  } else {
-    bar.textContent='📡 태블릿을 기울여 동물을 쫓아가세요!';
-    bar.style.background='rgba(0,0,0,.5)';
-  }
-}
-
-function startArMove(a,el){
-  stopArMove();
-  var spd=a.speed||3;
-  arVx=(Math.random()>0.5?1:-1)*spd;
-  arVy=(Math.random()>0.5?1:-1)*spd;
-  arTimer=setInterval(function(){
-    // 동물 스스로 월드 좌표 이동 (도망다님)
-    arWorldX+=arVx;
-    arWorldY+=arVy;
-    // 랜덤 방향 전환
-    if(Math.random()<0.015){
-      var s=a.speed||3;
-      arVx=(Math.random()-0.5)*s*2;
-      arVy=(Math.random()-0.5)*s*2;
-    }
-    updateARPosition();
-  },16);
-}
-
-function cancelAR(){
-  stopArMove();
-  window.removeEventListener('deviceorientation',onGyro);
-  lastGamma=null; lastBeta=null;
-  document.getElementById('ar-overlay').style.display='none';
-  document.getElementById('scan-frame').style.display='flex';
-  pendingCapture=null;
-  cooldown=false;
-  document.getElementById('scan-msg').textContent='QR을 화면 중앙에 맞춰보세요';
-}
-
-function stopArMove(){
-  if(arTimer){clearInterval(arTimer);arTimer=null;}
-}
-
-function confirmCapture(){
-  if(!pendingCapture) return;
-  stopArMove();
-  window.removeEventListener('deviceorientation',onGyro);
-  lastGamma=null; lastBeta=null;
-  // 포획 플래시 효과
-  var flash=document.getElementById('ar-capture-flash');
-  flash.style.opacity='0.8';
-  setTimeout(function(){flash.style.opacity='0';},150);
-  var id=pendingCapture;
-  pendingCapture=null;
-  setTimeout(function(){
-    document.getElementById('ar-overlay').style.display='none';
-    document.getElementById('scan-frame').style.display='flex';
-    stopCam();
-    doCapture(id);
-  },200);
 }
 
 function stopCam(){
@@ -402,6 +277,147 @@ function stopCam(){
   if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
 }
 
+// ── AR ──
+function showAR(id,a){
+  pendingCapture=id;
+
+  // 새 카메라 스트림을 AR 배경으로
+  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  var constraints={video:{facingMode:'environment'}};
+  if(!isIOS){constraints.video.width={ideal:1280};constraints.video.height={ideal:720};}
+  navigator.mediaDevices.getUserMedia(constraints).then(function(s){
+    camStream=s;
+    var bg=document.getElementById('ar-bg');
+    bg.srcObject=s; bg.play();
+  }).catch(function(){});
+
+  // 동물 초기 월드좌표 (화면 중심 기준 오프셋)
+  var angle=Math.random()*Math.PI*2;
+  arWX=Math.cos(angle)*60; arWY=Math.sin(angle)*60;
+  var spd=a.speed||3;
+  arVx=(Math.random()>0.5?1:-1)*spd;
+  arVy=(Math.random()>0.5?1:-1)*spd;
+  gyroX=0; gyroY=0; lastGamma=null; lastBeta=null;
+
+  // AR 화면 표시
+  document.getElementById('ar-title').textContent=a.name+' 출현!';
+  var el=document.getElementById('ar-animal');
+  el.textContent=a.emoji;
+  el.style.left=(window.innerWidth/2)+'px';
+  el.style.top=(window.innerHeight/2)+'px';
+  el.className='popping';
+  document.getElementById('ar-screen').style.display='block';
+
+  setTimeout(function(){
+    el.className=a.idle;
+    startArMove(a);
+    startGyro();
+  },500);
+}
+
+function getARPos(){
+  var W=window.innerWidth, H=window.innerHeight;
+  return {
+    x: W/2 + arWX - gyroX,
+    y: H/2 + arWY - gyroY
+  };
+}
+
+function updateARAnimal(){
+  var pos=getARPos();
+  var el=document.getElementById('ar-animal');
+  el.style.left=pos.x+'px';
+  el.style.top=pos.y+'px';
+
+  // 방향에 따라 좌우 반전
+  var baseTransform='translate(-50%,-50%)';
+  if(arVx<0) baseTransform+=' scaleX(-1)';
+  el.style.transform=baseTransform;
+
+  // 레이더
+  var dx=pos.x-window.innerWidth/2, dy=pos.y-window.innerHeight/2;
+  var maxR=22, cx=32, cy=32;
+  var len=Math.sqrt(dx*dx+dy*dy)||1;
+  var rx=cx+Math.min(Math.abs(dx)/len,1)*Math.min(len/8,maxR)*(dx<0?-1:1);
+  var ry=cy+Math.min(Math.abs(dy)/len,1)*Math.min(len/8,maxR)*(dy<0?-1:1);
+  var dot=document.getElementById('ar-radar-dot');
+  dot.style.left=Math.max(6,Math.min(58,rx))+'px';
+  dot.style.top=Math.max(6,Math.min(58,ry))+'px';
+
+  // 힌트
+  var hint=document.getElementById('ar-hint');
+  var inView=pos.x>40&&pos.x<window.innerWidth-40&&pos.y>80&&pos.y<window.innerHeight-80;
+  hint.textContent=inView?'동물을 탭해서 포획하세요!':'📡 태블릿을 기울여 동물을 쫓아가세요!';
+  hint.className=inView?'inview':'';
+}
+
+function startArMove(a){
+  stopArMove();
+  arTimer=setInterval(function(){
+    arWX+=arVx; arWY+=arVy;
+    if(Math.random()<0.02){
+      var s=a.speed||3;
+      arVx+=(Math.random()-0.5)*2;
+      arVy+=(Math.random()-0.5)*2;
+      var len=Math.sqrt(arVx*arVx+arVy*arVy)||1;
+      arVx=arVx/len*s; arVy=arVy/len*s;
+    }
+    updateARAnimal();
+  },16);
+}
+
+function stopArMove(){if(arTimer){clearInterval(arTimer);arTimer=null;}}
+
+function startGyro(){
+  if(!window.DeviceOrientationEvent)return;
+  if(typeof DeviceOrientationEvent.requestPermission==='function'){
+    DeviceOrientationEvent.requestPermission().then(function(r){
+      if(r==='granted')window.addEventListener('deviceorientation',onGyro);
+    }).catch(function(){});
+  } else {
+    window.addEventListener('deviceorientation',onGyro);
+  }
+}
+
+function onGyro(e){
+  if(lastGamma===null){lastGamma=e.gamma||0;lastBeta=e.beta||0;return;}
+  gyroX+=(e.gamma-lastGamma)*4;
+  gyroY+=(e.beta-lastBeta)*4;
+  lastGamma=e.gamma; lastBeta=e.beta;
+  updateARAnimal();
+}
+
+function stopGyro(){
+  window.removeEventListener('deviceorientation',onGyro);
+  lastGamma=null; lastBeta=null; gyroX=0; gyroY=0;
+}
+
+function confirmCapture(){
+  if(!pendingCapture)return;
+  stopArMove(); stopGyro();
+  var id=pendingCapture; pendingCapture=null;
+  // 포획 플래시
+  var flash=document.getElementById('ar-flash');
+  flash.style.transition='opacity 0.05s'; flash.style.opacity='1';
+  setTimeout(function(){
+    flash.style.transition='opacity 0.3s'; flash.style.opacity='0';
+    setTimeout(function(){
+      if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
+      document.getElementById('ar-screen').style.display='none';
+      doCapture(id);
+    },300);
+  },80);
+}
+
+function closeAR(){
+  stopArMove(); stopGyro();
+  if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
+  document.getElementById('ar-screen').style.display='none';
+  pendingCapture=null; cooldown=false;
+  goScan();
+}
+
+// ── 포획 결과 ──
 function doCapture(id){
   var a=ANIMALS[id];
   var isNew=player.caught.indexOf(id)===-1;
@@ -410,21 +426,21 @@ function doCapture(id){
   var c=document.getElementById('cap-content');
   if(a.isMiss){
     var msgs=['바람만 쐤어요... 다음엔 잡을 수 있을 거예요!','나뭇잎만 흔들렸어요. 동물이 도망갔나봐요!','발자국만 남아있어요. 조금 늦었나봐요!','동물이 숨어버렸어요. 다른 곳을 찾아봐요!','땅굴로 도망갔어요! 다음엔 더 빨리 찾아봐요!'];
-    var msg=msgs[Math.floor(Math.random()*msgs.length)];
-    c.innerHTML='<div class="already"><img src="logo.png" style="width:80px;height:80px;object-fit:contain;margin-bottom:8px"><p style="color:#e53935">동물을 놓쳤어요!</p><small>'+msg+'</small></div>';
+    c.innerHTML='<div class="already"><img src="logo.png" style="width:80px;height:80px;object-fit:contain;margin-bottom:8px"><p style="color:#e53935">동물을 놓쳤어요!</p><small>'+msgs[Math.floor(Math.random()*msgs.length)]+'</small></div>';
   } else if(isNew){
     c.innerHTML='<span class="sparkle">✨</span><span class="cap-emoji">'+a.emoji+'</span><div class="cap-title">'+a.name+' 포획!</div><div class="cap-desc">'+a.desc+'</div><div class="cap-new">🎉 새로운 동물 발견!</div>';
-    var realKeys=Object.keys(ANIMALS).filter(function(k){return !ANIMALS[k].isMiss;});
-    var caughtReal=player.caught.filter(function(k){return !ANIMALS[k].isMiss;});
-    if(caughtReal.length===realKeys.length) setTimeout(function(){toast('🏆 모든 동물 포획 완료!');},600);
+    var real=Object.keys(ANIMALS).filter(function(k){return !ANIMALS[k].isMiss;});
+    var cReal=player.caught.filter(function(k){return !ANIMALS[k].isMiss;});
+    if(cReal.length===real.length)setTimeout(function(){toast('🏆 모든 동물 포획 완료!');},600);
   } else {
     c.innerHTML='<div class="already"><span class="em">'+a.emoji+'</span><p>'+a.name+' - 이미 포획했어요!</p><small>다른 QR을 찾아보세요</small></div>';
   }
   show('s-capture');
 }
 
+// ── 도감 ──
 function goDex(){
-  stopCam(); stopArMove();
+  stopCam(); stopArMove(); stopGyro();
   setTopbars();
   document.getElementById('dx-bar').textContent=player.caught.length+'마리 / '+Object.keys(ANIMALS).length+'마리 발견';
   var grid=document.getElementById('dex-grid');
@@ -445,11 +461,11 @@ function goDex(){
 }
 
 function resetGame(){
-  if(!confirm('처음부터 다시 시작할까요?')) return;
-  stopCam(); stopArMove();
-  player=null;
-  sessionStorage.clear();
+  if(!confirm('처음부터 다시 시작할까요?'))return;
+  stopCam(); stopArMove(); stopGyro();
+  player=null; sessionStorage.clear();
   document.getElementById('name-input').value='';
+  document.getElementById('ar-screen').style.display='none';
   show('s-start');
 }
 
