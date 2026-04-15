@@ -249,60 +249,129 @@ function handleQR(data){
   }
 }
 
+var arWorldX=0, arWorldY=0; // 동물의 월드 좌표 (화면 중심 기준)
+var arGyroX=0, arGyroY=0;   // 자이로 누적값
+var arGyroSupport=false;
+
 function showAR(id,a){
   pendingCapture=id;
   document.getElementById('scan-frame').style.display='none';
-  document.getElementById('scan-msg').textContent='동물을 탭해서 포획하세요!';
-  document.getElementById('ar-label').textContent=a.name+' 출현!';
+  document.getElementById('scan-msg').textContent='';
+
+  // AR 전체화면 카메라
+  var bg=document.getElementById('ar-video-bg');
+  bg.srcObject=camStream;
+
+  // 동물 초기 위치: 화면 중심에서 랜덤 방향으로 약간 벗어남
+  var angle=Math.random()*Math.PI*2;
+  var dist=80+Math.random()*120;
+  arWorldX=Math.cos(angle)*dist;
+  arWorldY=Math.sin(angle)*dist;
+  arGyroX=0; arGyroY=0;
+
   var el=document.getElementById('ar-animal');
   el.textContent=a.emoji;
   el.className='';
-  el.style.left='50%';
-  el.style.top='50%';
-  el.style.fontSize='80px';
-  el.style.transform='translate(-50%,-50%) scale(0)';
-  el.style.transition='transform 0.45s cubic-bezier(.17,.67,.35,1.5)';
-  document.getElementById('ar-overlay').style.display='flex';
+  document.getElementById('ar-name-tag').textContent=a.name+' 출현!';
+  document.getElementById('ar-overlay').style.display='block';
+
+  // 등장 애니메이션
+  updateARPosition();
+  el.style.transform+=' scale(0)';
+  el.style.transition='transform 0.4s cubic-bezier(.17,.67,.35,1.5)';
   setTimeout(function(){
-    el.style.transform='translate(-50%,-50%) scale(1)';
+    el.style.transform=el.style.transform.replace(' scale(0)','');
     setTimeout(function(){
-      el.style.transition='none';
+      el.style.transition='';
       el.className=a.idle;
       startArMove(a,el);
-    },450);
+    },400);
   },30);
+
+  // 자이로 이벤트
+  arGyroSupport=false;
+  if(window.DeviceOrientationEvent){
+    if(typeof DeviceOrientationEvent.requestPermission==='function'){
+      DeviceOrientationEvent.requestPermission().then(function(r){
+        if(r==='granted'){arGyroSupport=true;window.addEventListener('deviceorientation',onGyro);}
+      }).catch(function(){});
+    } else {
+      arGyroSupport=true;
+      window.addEventListener('deviceorientation',onGyro);
+    }
+  }
+}
+
+var lastGamma=null, lastBeta=null;
+function onGyro(e){
+  if(lastGamma===null){lastGamma=e.gamma||0;lastBeta=e.beta||0;return;}
+  var dg=(e.gamma||0)-lastGamma;
+  var db=(e.beta||0)-lastBeta;
+  lastGamma=e.gamma||0; lastBeta=e.beta||0;
+  // 기울기로 뷰포트 이동 (반대 방향 = 동물이 반대로 이동하는 것처럼)
+  arGyroX+=dg*3;
+  arGyroY+=db*3;
+  updateARPosition();
+}
+
+function updateARPosition(){
+  var el=document.getElementById('ar-animal');
+  var W=window.innerWidth, H=window.innerHeight;
+  var px=(W/2)+arWorldX-arGyroX;
+  var py=(H/2)+arWorldY-arGyroY;
+  el.style.left=px+'px';
+  el.style.top=py+'px';
+  el.style.transform='translate(-50%,-50%)';
+
+  // 레이더 업데이트
+  var dx=arWorldX-arGyroX, dy=arWorldY-arGyroY;
+  var dist=Math.sqrt(dx*dx+dy*dy);
+  var maxR=25;
+  var rx=35+Math.min(dx/10,maxR)*Math.sign(dx)*Math.min(Math.abs(dx/10),maxR)/maxR;
+  var ry=35+Math.min(dy/10,maxR)*Math.sign(dy)*Math.min(Math.abs(dy/10),maxR)/maxR;
+  var dot=document.getElementById('ar-radar-dot');
+  dot.style.left=Math.max(8,Math.min(62,rx))+'px';
+  dot.style.top=Math.max(8,Math.min(62,ry))+'px';
+
+  // 화면 안에 있으면 힌트 변경
+  var bar=document.getElementById('ar-hint-bar');
+  if(px>0&&px<W&&py>0&&py<H){
+    bar.textContent='동물을 탭해서 포획하세요!';
+    bar.style.background='rgba(45,91,227,.7)';
+  } else {
+    bar.textContent='📡 태블릿을 기울여 동물을 쫓아가세요!';
+    bar.style.background='rgba(0,0,0,.5)';
+  }
 }
 
 function startArMove(a,el){
   stopArMove();
-  var wrap=document.getElementById('ar-overlay');
-  var size=80;
-  arX=wrap.offsetWidth/2 - size/2;
-  arY=wrap.offsetHeight/2 - size/2;
-  var angle=Math.random()*Math.PI*2;
   var spd=a.speed||3;
-  arVx=Math.cos(angle)*spd;
-  arVy=Math.sin(angle)*spd;
+  arVx=(Math.random()>0.5?1:-1)*spd;
+  arVy=(Math.random()>0.5?1:-1)*spd;
   arTimer=setInterval(function(){
-    var W=wrap.offsetWidth||340;
-    var H=wrap.offsetHeight||260;
-    var maxX=W-size, maxY=H-size;
-    arX+=arVx; arY+=arVy;
-    if(arX<=0){arX=0; arVx=Math.abs(arVx);}
-    if(arX>=maxX){arX=maxX; arVx=-Math.abs(arVx);}
-    if(arY<=0){arY=0; arVy=Math.abs(arVy);}
-    if(arY>=maxY){arY=maxY; arVy=-Math.abs(arVy);}
-    el.style.left=arX+'px';
-    el.style.top=arY+'px';
-    el.style.transform=arVx>0?'scaleX(1)':'scaleX(-1)';
-    if(Math.random()<0.02){
-      var spd2=a.speed||3;
-      arVx+=(Math.random()-0.5)*2;
-      arVy+=(Math.random()-0.5)*2;
-      var len=Math.sqrt(arVx*arVx+arVy*arVy)||1;
-      arVx=arVx/len*spd2; arVy=arVy/len*spd2;
+    // 동물 스스로 월드 좌표 이동 (도망다님)
+    arWorldX+=arVx;
+    arWorldY+=arVy;
+    // 랜덤 방향 전환
+    if(Math.random()<0.015){
+      var s=a.speed||3;
+      arVx=(Math.random()-0.5)*s*2;
+      arVy=(Math.random()-0.5)*s*2;
     }
+    updateARPosition();
   },16);
+}
+
+function cancelAR(){
+  stopArMove();
+  window.removeEventListener('deviceorientation',onGyro);
+  lastGamma=null; lastBeta=null;
+  document.getElementById('ar-overlay').style.display='none';
+  document.getElementById('scan-frame').style.display='flex';
+  pendingCapture=null;
+  cooldown=false;
+  document.getElementById('scan-msg').textContent='QR을 화면 중앙에 맞춰보세요';
 }
 
 function stopArMove(){
@@ -312,12 +381,20 @@ function stopArMove(){
 function confirmCapture(){
   if(!pendingCapture) return;
   stopArMove();
+  window.removeEventListener('deviceorientation',onGyro);
+  lastGamma=null; lastBeta=null;
+  // 포획 플래시 효과
+  var flash=document.getElementById('ar-capture-flash');
+  flash.style.opacity='0.8';
+  setTimeout(function(){flash.style.opacity='0';},150);
   var id=pendingCapture;
   pendingCapture=null;
-  document.getElementById('ar-overlay').style.display='none';
-  document.getElementById('scan-frame').style.display='flex';
-  stopCam();
-  doCapture(id);
+  setTimeout(function(){
+    document.getElementById('ar-overlay').style.display='none';
+    document.getElementById('scan-frame').style.display='flex';
+    stopCam();
+    doCapture(id);
+  },200);
 }
 
 function stopCam(){
