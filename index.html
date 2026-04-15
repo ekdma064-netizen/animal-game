@@ -53,7 +53,7 @@ input[type=text]:focus{border-color:#2d5be3}
 /* AR HUD */
 #ar-hud{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(0,0,0,.5),transparent)}
 #ar-title{color:#fff;font-size:16px;font-weight:700;text-shadow:0 2px 6px rgba(0,0,0,.8)}
-#ar-close-btn{background:rgba(0,0,0,.5);color:#fff;border:1.5px solid rgba(255,255,255,.4);font-size:18px;width:38px;height:38px;border-radius:50%;cursor:pointer}
+#ar-close-btn{display:none;background:rgba(255,100,100,.85);color:#fff;border:none;font-size:14px;font-weight:700;padding:10px 18px;border-radius:20px;cursor:pointer;backdrop-filter:blur(4px)}
 #ar-hint{position:absolute;bottom:0;left:0;right:0;padding:14px;text-align:center;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);transition:background .3s}
 #ar-hint.inview{background:linear-gradient(to top,rgba(45,91,227,.7),transparent)}
 #ar-radar{position:absolute;bottom:70px;right:16px;width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.3)}
@@ -180,6 +180,7 @@ var camStream=null, camTimer=null, detector=null;
 var cooldown=false, pendingCapture=null;
 var arTimer=null, arWX=0, arWY=0, arVx=0, arVy=0;
 var gyroX=0, gyroY=0, lastGamma=null, lastBeta=null;
+var arEscTimer=null;
 
 function savePlayer(){sessionStorage.setItem('p',JSON.stringify(player));}
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
@@ -312,6 +313,11 @@ function showAR(id,a){
     el.className=a.idle;
     startArMove(a);
     startGyro();
+    // 5초 후 '놓친동물 다시잡기' 버튼 표시
+    arEscTimer=setTimeout(function(){
+      document.getElementById('ar-close-btn').style.display='block';
+      document.getElementById('ar-close-btn').textContent='놓친 동물 다시잡기 🔄';
+    },5000);
   },500);
 }
 
@@ -353,20 +359,43 @@ function updateARAnimal(){
 
 function startArMove(a){
   stopArMove();
+  // 동물이 카메라를 피해 도망다니는 로직
   arTimer=setInterval(function(){
+    var W=window.innerWidth, H=window.innerHeight;
+    var pos=getARPos();
+
+    // 화면 안에 있으면 도망치려고 함
+    var inView=pos.x>0&&pos.x<W&&pos.y>0&&pos.y<H;
+    if(inView){
+      // 화면 중심에서 멀어지는 방향으로 가속
+      var cx=W/2, cy=H/2;
+      var dx=pos.x-cx, dy=pos.y-cy;
+      var len=Math.sqrt(dx*dx+dy*dy)||1;
+      arVx+=dx/len*0.3;
+      arVy+=dy/len*0.3;
+    }
+
+    // 속도 제한
+    var spd=a.speed||3;
+    var vlen=Math.sqrt(arVx*arVx+arVy*arVy)||1;
+    if(vlen>spd*2){arVx=arVx/vlen*spd*2;arVy=arVy/vlen*spd*2;}
+
     arWX+=arVx; arWY+=arVy;
+
+    // 랜덤 방향 변화
     if(Math.random()<0.02){
-      var s=a.speed||3;
-      arVx+=(Math.random()-0.5)*2;
-      arVy+=(Math.random()-0.5)*2;
-      var len=Math.sqrt(arVx*arVx+arVy*arVy)||1;
-      arVx=arVx/len*s; arVy=arVy/len*s;
+      arVx+=(Math.random()-0.5)*spd;
+      arVy+=(Math.random()-0.5)*spd;
     }
     updateARAnimal();
   },16);
 }
 
-function stopArMove(){if(arTimer){clearInterval(arTimer);arTimer=null;}}
+function stopArMove(){
+  if(arTimer){clearInterval(arTimer);arTimer=null;}
+  if(arEscTimer){clearTimeout(arEscTimer);arEscTimer=null;}
+  document.getElementById('ar-close-btn').style.display='none';
+}
 
 function startGyro(){
   if(!window.DeviceOrientationEvent)return;
@@ -414,6 +443,7 @@ function closeAR(){
   if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
   document.getElementById('ar-screen').style.display='none';
   pendingCapture=null; cooldown=false;
+  // 동물 다시 등장 - 같은 동물 재시도
   goScan();
 }
 
