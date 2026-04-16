@@ -175,7 +175,113 @@ var ANIMALS={
   miss:{emoji:'❓',name:'동물을 놓쳤어요!',desc:'동물이 도망갔어요!',isMiss:true,idle:'',speed:0}
 };
 
-var player=null;
+// ── 오디오 ──
+var audioCtx=null;
+function getCtx(){
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// 배경음악
+var bgNodes=[];
+function startBGM(){
+  stopBGM();
+  var ctx=getCtx();
+  // 밝고 귀여운 루프 멜로디 (C장조)
+  var notes=[523,659,784,659,523,392,440,523, 659,784,880,784,659,523,587,659];
+  var dur=0.18, t=ctx.currentTime;
+  function playLoop(){
+    notes.forEach(function(hz,i){
+      var o=ctx.createOscillator();
+      var g=ctx.createGain();
+      o.type='triangle';
+      o.frequency.value=hz;
+      g.gain.setValueAtTime(0,t+i*dur);
+      g.gain.linearRampToValueAtTime(0.12,t+i*dur+0.02);
+      g.gain.linearRampToValueAtTime(0,t+i*dur+dur-0.02);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t+i*dur); o.stop(t+i*dur+dur);
+      bgNodes.push(o);
+    });
+    // 화음 추가
+    [392,494,587,494].forEach(function(hz,i){
+      var o=ctx.createOscillator();
+      var g=ctx.createGain();
+      o.type='sine';
+      o.frequency.value=hz;
+      g.gain.setValueAtTime(0.05,t+i*dur*4);
+      g.gain.linearRampToValueAtTime(0,t+i*dur*4+dur*4-0.05);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t+i*dur*4); o.stop(t+i*dur*4+dur*4);
+      bgNodes.push(o);
+    });
+    t+=notes.length*dur;
+    bgLoop=setTimeout(playLoop,notes.length*dur*1000-100);
+  }
+  playLoop();
+}
+var bgLoop=null;
+function stopBGM(){
+  if(bgLoop){clearTimeout(bgLoop);bgLoop=null;}
+  bgNodes.forEach(function(o){try{o.stop();}catch(e){}});
+  bgNodes=[];
+}
+
+// 포획 성공 효과음
+function playCatchSFX(){
+  var ctx=getCtx();
+  var t=ctx.currentTime;
+  [[523,0],[659,0.1],[784,0.2],[1047,0.3],[1319,0.4]].forEach(function(p){
+    var o=ctx.createOscillator();
+    var g=ctx.createGain();
+    o.type='sine'; o.frequency.value=p[0];
+    g.gain.setValueAtTime(0,t+p[1]);
+    g.gain.linearRampToValueAtTime(0.3,t+p[1]+0.03);
+    g.gain.linearRampToValueAtTime(0,t+p[1]+0.12);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t+p[1]); o.stop(t+p[1]+0.15);
+  });
+  // 반짝 효과
+  var o2=ctx.createOscillator();
+  var g2=ctx.createGain();
+  o2.type='triangle'; o2.frequency.value=2000;
+  g2.gain.setValueAtTime(0.15,t+0.5);
+  g2.gain.linearRampToValueAtTime(0,t+0.8);
+  o2.connect(g2); g2.connect(ctx.destination);
+  o2.start(t+0.5); o2.stop(t+0.8);
+}
+
+// 놓쳤을 때 효과음
+function playMissSFX(){
+  var ctx=getCtx();
+  var t=ctx.currentTime;
+  [[400,0],[350,0.15],[280,0.3],[220,0.45]].forEach(function(p){
+    var o=ctx.createOscillator();
+    var g=ctx.createGain();
+    o.type='sawtooth'; o.frequency.value=p[0];
+    g.gain.setValueAtTime(0,t+p[1]);
+    g.gain.linearRampToValueAtTime(0.2,t+p[1]+0.04);
+    g.gain.linearRampToValueAtTime(0,t+p[1]+0.13);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t+p[1]); o.stop(t+p[1]+0.15);
+  });
+}
+
+// AR 등장 효과음
+function playAppearSFX(){
+  var ctx=getCtx();
+  var t=ctx.currentTime;
+  var o=ctx.createOscillator();
+  var g=ctx.createGain();
+  o.type='sine';
+  o.frequency.setValueAtTime(300,t);
+  o.frequency.linearRampToValueAtTime(800,t+0.3);
+  g.gain.setValueAtTime(0.2,t);
+  g.gain.linearRampToValueAtTime(0,t+0.4);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(t); o.stop(t+0.4);
+}
 var camStream=null, camTimer=null, detector=null;
 var cooldown=false, pendingCapture=null;
 var arTimer=null, arWX=0, arWY=0, arVx=0, arVy=0;
@@ -202,6 +308,7 @@ function onStart(){
   player={name:n,caught:[]};
   savePlayer();
   setTopbars();
+  startBGM();
   goScan();
 }
 
@@ -311,6 +418,7 @@ function showAR(id,a){
 
   setTimeout(function(){
     el.className=a.idle;
+    playAppearSFX();
     startArMove(a);
     startGyro();
     // 5초 후 '놓친동물 다시잡기' 버튼 표시
@@ -428,6 +536,7 @@ function confirmCapture(){
   // 포획 플래시
   var flash=document.getElementById('ar-flash');
   flash.style.transition='opacity 0.05s'; flash.style.opacity='1';
+  playCatchSFX();
   setTimeout(function(){
     flash.style.transition='opacity 0.3s'; flash.style.opacity='0';
     setTimeout(function(){
@@ -455,6 +564,7 @@ function doCapture(id){
   setTopbars();
   var c=document.getElementById('cap-content');
   if(a.isMiss){
+    playMissSFX();
     var msgs=['바람만 쐤어요... 다음엔 잡을 수 있을 거예요!','나뭇잎만 흔들렸어요. 동물이 도망갔나봐요!','발자국만 남아있어요. 조금 늦었나봐요!','동물이 숨어버렸어요. 다른 곳을 찾아봐요!','땅굴로 도망갔어요! 다음엔 더 빨리 찾아봐요!'];
     c.innerHTML='<div class="already"><img src="logo.png" style="width:80px;height:80px;object-fit:contain;margin-bottom:8px"><p style="color:#e53935">동물을 놓쳤어요!</p><small>'+msgs[Math.floor(Math.random()*msgs.length)]+'</small></div>';
   } else if(isNew){
@@ -492,7 +602,7 @@ function goDex(){
 
 function resetGame(){
   if(!confirm('처음부터 다시 시작할까요?'))return;
-  stopCam(); stopArMove(); stopGyro();
+  stopCam(); stopArMove(); stopGyro(); stopBGM();
   player=null; sessionStorage.clear();
   document.getElementById('name-input').value='';
   document.getElementById('ar-screen').style.display='none';
