@@ -25,11 +25,41 @@ input[type=text]:focus{border-color:#2d5be3}
 
 /* 스캔 카메라 */
 #cam-wrap{position:relative;width:100%;max-width:340px;border-radius:16px;overflow:hidden;background:#000;margin-bottom:10px}
-#cam-video{width:100%;display:block;max-height:260px;object-fit:cover}
+#cam-video{width:100%;display:block;max-height:280px;object-fit:cover}
+
+/* 스캔 프레임 - 네 모서리만 표시 */
 .scan-frame{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.scan-box{width:180px;height:180px;border:3px solid #fff;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.4);position:relative}
-.scan-line{position:absolute;left:4px;right:4px;height:2px;background:#2d5be3;border-radius:2px;animation:sl 2s linear infinite}
-@keyframes sl{0%{top:4px}100%{top:calc(100% - 4px)}}
+.scan-box{width:200px;height:200px;position:relative}
+.scan-box::before,.scan-box::after,.scan-corner-bl,.scan-corner-br{
+  content:'';position:absolute;width:28px;height:28px;border-color:#fff;border-style:solid;
+}
+.scan-box::before{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+.scan-box::after{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
+.scan-corner-bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
+.scan-corner-br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+
+/* 스캔 라인 */
+.scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,#2d5be3,#00e5ff,#2d5be3,transparent);border-radius:2px;animation:sl 2s ease-in-out infinite;box-shadow:0 0 8px #00e5ff}
+@keyframes sl{0%{top:4px;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:calc(100% - 4px);opacity:0}}
+
+/* QR 감지 시 빨간 박스 */
+#detect-box{position:absolute;border:2.5px solid #ff3333;border-radius:6px;display:none;pointer-events:none;box-shadow:0 0 12px rgba(255,50,50,.6);transition:all 0.1s}
+#detect-box::before,#detect-box::after,.detect-corner-bl,.detect-corner-br{
+  content:'';position:absolute;width:16px;height:16px;border-color:#ff3333;border-style:solid;
+}
+#detect-box::before{top:-2px;left:-2px;border-width:3px 0 0 3px;border-radius:3px 0 0 0}
+#detect-box::after{top:-2px;right:-2px;border-width:3px 3px 0 0;border-radius:0 3px 0 0}
+.detect-corner-bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px;border-radius:0 0 0 3px}
+.detect-corner-br{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-radius:0 0 3px 0}
+@keyframes detect-pulse{0%,100%{box-shadow:0 0 8px rgba(255,50,50,.5)}50%{box-shadow:0 0 20px rgba(255,50,50,.9)}}
+#detect-box.active{display:block;animation:detect-pulse .4s ease-in-out infinite}
+
+/* 감지 성공 초록 박스 */
+#detect-box.success{border-color:#00ff88;box-shadow:0 0 16px rgba(0,255,136,.7)}
+#detect-box.success::before,#detect-box.success::after,
+#detect-box.success .detect-corner-bl,#detect-box.success .detect-corner-br{border-color:#00ff88}
+@keyframes success-flash{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
+#detect-box.success{animation:success-flash .2s ease-in-out 3}
 
 /* AR 전체화면 */
 #ar-screen{display:none;position:fixed;inset:0;z-index:100;background:#000;overflow:hidden}
@@ -107,7 +137,17 @@ input[type=text]:focus{border-color:#2d5be3}
   <p class="sub">교실에 붙어있는 QR에<br>카메라를 가까이 대세요</p>
   <div id="cam-wrap">
     <video id="cam-video" autoplay playsinline muted></video>
-    <div class="scan-frame" id="scan-frame"><div class="scan-box"><div class="scan-line"></div></div></div>
+    <div class="scan-frame" id="scan-frame">
+      <div class="scan-box">
+        <div class="scan-corner-bl"></div>
+        <div class="scan-corner-br"></div>
+        <div class="scan-line"></div>
+      </div>
+    </div>
+    <div id="detect-box">
+      <div class="detect-corner-bl"></div>
+      <div class="detect-corner-br"></div>
+    </div>
   </div>
   <canvas id="cam-canvas" style="display:none"></canvas>
   <p id="scan-msg">카메라 시작 중...</p>
@@ -341,7 +381,32 @@ function startCam(){
   }).catch(function(){msg.textContent='카메라 권한을 허용해주세요';});
 }
 
-function loadJsQR(cb){
+function showDetectBox(location){
+  var wrap=document.getElementById('cam-wrap');
+  var box=document.getElementById('detect-box');
+  if(!location||!wrap){box.className='';return;}
+  var vw=wrap.offsetWidth, vh=wrap.offsetHeight;
+  var vv=document.getElementById('cam-video');
+  var scaleX=vw/(vv.videoWidth||1), scaleY=vh/(vv.videoHeight||1);
+  var pts=location.topLeftCorner;
+  var pts2=location.bottomRightCorner;
+  var x=pts.x*scaleX, y=pts.y*scaleY;
+  var w=(pts2.x-pts.x)*scaleX, h=(pts2.y-pts.y)*scaleY;
+  var pad=8;
+  box.style.left=(x-pad)+'px'; box.style.top=(y-pad)+'px';
+  box.style.width=(w+pad*2)+'px'; box.style.height=(h+pad*2)+'px';
+  box.className='active';
+}
+
+function hideDetectBox(){
+  document.getElementById('detect-box').className='';
+}
+
+function flashSuccessBox(){
+  var box=document.getElementById('detect-box');
+  box.className='active success';
+  setTimeout(function(){box.className='';},600);
+}
   if(window.jsQR){cb();return;}
   var s=document.createElement('script');
   s.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
@@ -352,7 +417,29 @@ function scanWithDetector(){
   if(cooldown)return;
   var v=document.getElementById('cam-video');
   if(!v.videoWidth)return;
-  detector.detect(v).then(function(codes){if(codes.length>0)handleQR(codes[0].rawValue);}).catch(function(){});
+  detector.detect(v).then(function(codes){
+    if(codes.length>0){
+      // 감지 박스 표시 (BarcodeDetector는 cornerPoints 제공)
+      var c=codes[0];
+      if(c.cornerPoints&&c.cornerPoints.length>=2){
+        var wrap=document.getElementById('cam-wrap');
+        var vw=wrap.offsetWidth, vh=wrap.offsetHeight;
+        var vv=document.getElementById('cam-video');
+        var scaleX=vw/(vv.videoWidth||1), scaleY=vh/(vv.videoHeight||1);
+        var pts=c.cornerPoints;
+        var xs=pts.map(function(p){return p.x;}), ys=pts.map(function(p){return p.y;});
+        var minX=Math.min.apply(null,xs), minY=Math.min.apply(null,ys);
+        var maxX=Math.max.apply(null,xs), maxY=Math.max.apply(null,ys);
+        var pad=8, box=document.getElementById('detect-box');
+        box.style.left=(minX*scaleX-pad)+'px'; box.style.top=(minY*scaleY-pad)+'px';
+        box.style.width=((maxX-minX)*scaleX+pad*2)+'px'; box.style.height=((maxY-minY)*scaleY+pad*2)+'px';
+        box.className='active';
+      }
+      handleQR(codes[0].rawValue);
+    } else {
+      hideDetectBox();
+    }
+  }).catch(function(){});
 }
 
 function scanWithJsQR(){
@@ -363,7 +450,12 @@ function scanWithJsQR(){
   var ctx=c.getContext('2d',{willReadFrequently:true});
   ctx.drawImage(v,0,0);
   var code=jsQR(ctx.getImageData(0,0,c.width,c.height).data,c.width,c.height,{inversionAttempts:'attemptBoth'});
-  if(code)handleQR(code.data);
+  if(code){
+    showDetectBox(code.location);
+    handleQR(code.data);
+  } else {
+    hideDetectBox();
+  }
 }
 
 function handleQR(data){
@@ -372,9 +464,14 @@ function handleQR(data){
   var m=data.match(/[?&]animal=([a-z]+)/);
   if(m&&ANIMALS[m[1]]){
     var id=m[1], a=ANIMALS[id];
-    if(a.isMiss){stopCam();doCapture(id);}
-    else{stopCam();showAR(id,a);}
+    flashSuccessBox();
+    setTimeout(function(){
+      hideDetectBox();
+      if(a.isMiss){stopCam();doCapture(id);}
+      else{stopCam();showAR(id,a);}
+    },400);
   } else {
+    hideDetectBox();
     document.getElementById('scan-msg').textContent='⚠️ 동물 QR이 아니에요!';
     setTimeout(function(){cooldown=false;},2000);
   }
