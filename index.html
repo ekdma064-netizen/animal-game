@@ -26,47 +26,34 @@ input[type=text]:focus{border-color:#2d5be3}
 /* 스캔 카메라 */
 #cam-wrap{position:relative;width:100%;max-width:340px;border-radius:16px;overflow:hidden;background:#000;margin-bottom:10px}
 #cam-video{width:100%;display:block;max-height:280px;object-fit:cover}
-
-/* 스캔 프레임 - 네 모서리만 표시 */
 .scan-frame{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .scan-box{width:200px;height:200px;position:relative}
-.scan-box::before,.scan-box::after,.scan-corner-bl,.scan-corner-br{
-  content:'';position:absolute;width:28px;height:28px;border-color:#fff;border-style:solid;
-}
+.scan-box::before,.scan-box::after,.scan-corner-bl,.scan-corner-br{content:'';position:absolute;width:28px;height:28px;border-color:#fff;border-style:solid}
 .scan-box::before{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
 .scan-box::after{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
 .scan-corner-bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
 .scan-corner-br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
-
-/* 스캔 라인 */
 .scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,#2d5be3,#00e5ff,#2d5be3,transparent);border-radius:2px;animation:sl 2s ease-in-out infinite;box-shadow:0 0 8px #00e5ff}
 @keyframes sl{0%{top:4px;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:calc(100% - 4px);opacity:0}}
 
-/* QR 감지 시 빨간 박스 */
-#detect-box{position:absolute;border:2.5px solid #ff3333;border-radius:6px;display:none;pointer-events:none;box-shadow:0 0 12px rgba(255,50,50,.6);transition:all 0.1s}
-#detect-box::before,#detect-box::after,.detect-corner-bl,.detect-corner-br{
-  content:'';position:absolute;width:16px;height:16px;border-color:#ff3333;border-style:solid;
-}
+/* QR 감지 박스 */
+#detect-box{position:absolute;border:2.5px solid #ff3333;border-radius:6px;display:none;pointer-events:none;box-shadow:0 0 12px rgba(255,50,50,.6)}
+#detect-box::before,#detect-box::after,.detect-corner-bl,.detect-corner-br{content:'';position:absolute;width:16px;height:16px;border-color:#ff3333;border-style:solid}
 #detect-box::before{top:-2px;left:-2px;border-width:3px 0 0 3px;border-radius:3px 0 0 0}
 #detect-box::after{top:-2px;right:-2px;border-width:3px 3px 0 0;border-radius:0 3px 0 0}
 .detect-corner-bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px;border-radius:0 0 0 3px}
 .detect-corner-br{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-radius:0 0 3px 0}
 @keyframes detect-pulse{0%,100%{box-shadow:0 0 8px rgba(255,50,50,.5)}50%{box-shadow:0 0 20px rgba(255,50,50,.9)}}
 #detect-box.active{display:block;animation:detect-pulse .4s ease-in-out infinite}
-
-/* 감지 성공 초록 박스 */
 #detect-box.success{border-color:#00ff88;box-shadow:0 0 16px rgba(0,255,136,.7)}
-#detect-box.success::before,#detect-box.success::after,
-#detect-box.success .detect-corner-bl,#detect-box.success .detect-corner-br{border-color:#00ff88}
+#detect-box.success::before,#detect-box.success::after,#detect-box.success .detect-corner-bl,#detect-box.success .detect-corner-br{border-color:#00ff88}
 @keyframes success-flash{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
 #detect-box.success{animation:success-flash .2s ease-in-out 3}
 
 /* AR 전체화면 */
 #ar-screen{display:none;position:fixed;inset:0;z-index:100;background:#000;overflow:hidden}
 #ar-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-#ar-animal{position:absolute;font-size:90px;cursor:pointer;user-select:none;line-height:1;
-  filter:drop-shadow(0 6px 20px rgba(0,0,0,.7));
-  transform:translate(-50%,-50%)}
+#ar-animal{position:absolute;font-size:90px;cursor:pointer;user-select:none;line-height:1;filter:drop-shadow(0 6px 20px rgba(0,0,0,.7));transform:translate(-50%,-50%)}
 #ar-animal.popping{animation:ar-pop 0.5s cubic-bezier(.17,.67,.35,1.5) forwards}
 @keyframes ar-pop{0%{transform:translate(-50%,-50%) scale(0) rotate(-20deg)}60%{transform:translate(-50%,-50%) scale(1.3) rotate(5deg)}100%{transform:translate(-50%,-50%) scale(1) rotate(0)}}
 @keyframes idle-bounce{0%,100%{margin-top:0}40%{margin-top:-16px}70%{margin-top:-8px}}
@@ -79,11 +66,9 @@ input[type=text]:focus{border-color:#2d5be3}
 .idle-shake{animation:idle-shake 0.5s ease-in-out infinite}
 .idle-float{animation:idle-float 1.4s ease-in-out infinite}
 .idle-wiggle{animation:idle-wiggle 0.6s ease-in-out infinite}
-
-/* AR HUD */
 #ar-hud{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(0,0,0,.5),transparent)}
 #ar-title{color:#fff;font-size:16px;font-weight:700;text-shadow:0 2px 6px rgba(0,0,0,.8)}
-#ar-close-btn{display:none;background:rgba(255,100,100,.85);color:#fff;border:none;font-size:14px;font-weight:700;padding:10px 18px;border-radius:20px;cursor:pointer;backdrop-filter:blur(4px)}
+#ar-close-btn{display:none;background:rgba(255,100,100,.85);color:#fff;border:none;font-size:14px;font-weight:700;padding:10px 18px;border-radius:20px;cursor:pointer}
 #ar-hint{position:absolute;bottom:0;left:0;right:0;padding:14px;text-align:center;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);transition:background .3s}
 #ar-hint.inview{background:linear-gradient(to top,rgba(45,91,227,.7),transparent)}
 #ar-radar{position:absolute;bottom:70px;right:16px;width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.3)}
@@ -114,9 +99,9 @@ input[type=text]:focus{border-color:#2d5be3}
 .dex-label{font-size:11px;font-weight:700;color:#333}
 .dex-num{font-size:10px;color:#aaa}
 .count-bar{background:#e0eaff;border-radius:10px;padding:7px 16px;font-size:14px;font-weight:700;color:#2d5be3;margin-bottom:16px}
+#scan-msg{font-size:13px;color:#555;text-align:center;margin-bottom:8px;min-height:18px}
 .toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 20px;border-radius:16px;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:999;white-space:nowrap}
 .toast.show{opacity:1}
-#scan-msg{font-size:13px;color:#555;text-align:center;margin-bottom:8px;min-height:18px}
 </style>
 </head>
 <body>
@@ -162,7 +147,7 @@ input[type=text]:focus{border-color:#2d5be3}
   <div id="ar-radar"><div id="ar-radar-dot"></div></div>
   <div id="ar-hud">
     <div id="ar-title"></div>
-    <button id="ar-close-btn" onclick="closeAR()">✕</button>
+    <button id="ar-close-btn" onclick="closeAR()">놓친 동물 다시잡기 🔄</button>
   </div>
   <div id="ar-hint">태블릿을 기울여 동물을 쫓아가세요!</div>
   <div id="ar-flash"></div>
@@ -191,52 +176,54 @@ input[type=text]:focus{border-color:#2d5be3}
 <div class="toast" id="toast"></div>
 
 <script>
-var ANIMALS={
-  fox:{emoji:'🦊',name:'꼬미여우',desc:'장난꾸러기 여우! 꼬리가 아주 복슬복슬해요.',idle:'idle-shake',speed:4},
-  rabbit:{emoji:'🐰',name:'토끼별',desc:'달에서 온 토끼. 귀가 엄청 길어요!',idle:'idle-bounce',speed:5},
-  penguin:{emoji:'🐧',name:'펭이',desc:'남극에서 온 친구. 춤을 아주 잘 춰요!',idle:'idle-wiggle',speed:2},
-  frog:{emoji:'🐸',name:'초록이',desc:'연못의 수호자! 점프 실력이 최고예요.',idle:'idle-bounce',speed:5},
-  bear:{emoji:'🐻',name:'구름곰',desc:'구름 위에서 내려온 포근한 곰.',idle:'idle-bounce',speed:2},
-  cat:{emoji:'🐱',name:'냥냥이',desc:'새침하지만 사실 엄청 친해지고 싶어요.',idle:'idle-float',speed:3},
-  star:{emoji:'🦄',name:'반짝이',desc:'별빛으로 만들어진 신비로운 유니콘!',idle:'idle-spin',speed:4},
-  octopus:{emoji:'🐙',name:'문어몽',desc:'다리가 8개! 뭐든 척척 잡아드려요.',idle:'idle-wiggle',speed:2},
-  lion:{emoji:'🦁',name:'사자왕',desc:'백수의 왕! 갈기가 멋있어요.',idle:'idle-shake',speed:3},
-  panda:{emoji:'🐼',name:'판다롱',desc:'대나무를 엄청 좋아하는 귀요미!',idle:'idle-bounce',speed:2},
-  dragon:{emoji:'🐲',name:'드래곤이',desc:'하늘을 나는 신비로운 용이에요.',idle:'idle-float',speed:6},
-  hamster:{emoji:'🐹',name:'햄찌',desc:'볼 주머니에 뭐든 넣는 귀여운 친구!',idle:'idle-shake',speed:6},
-  owl:{emoji:'🦉',name:'부엉부엉',desc:'밤의 수호자! 눈이 엄청 크답니다.',idle:'idle-float',speed:2},
-  dolphin:{emoji:'🐬',name:'돌핀이',desc:'바다의 악동! 점프를 잘 해요.',idle:'idle-bounce',speed:5},
-  turtle:{emoji:'🐢',name:'거북이',desc:'느리지만 끝까지 포기하지 않아요!',idle:'idle-float',speed:1},
-  chick:{emoji:'🐥',name:'삐약이',desc:'막 태어난 아기 병아리예요. 너무 귀여워요!',idle:'idle-bounce',speed:4},
-  koala:{emoji:'🐨',name:'코알라몽',desc:'유칼립투스만 먹는 호주 친구!',idle:'idle-float',speed:1},
-  crab:{emoji:'🦀',name:'집게리',desc:'집게발로 뭐든 집을 수 있어요!',idle:'idle-shake',speed:3},
-  elephant:{emoji:'🐘',name:'코끼리킹',desc:'코가 엄청 길어요. 기억력도 최고!',idle:'idle-bounce',speed:2},
-  wolf:{emoji:'🐺',name:'늑대별',desc:'달밤에 우우~ 노래하는 멋진 친구!',idle:'idle-shake',speed:5},
-  miss:{emoji:'❓',name:'동물을 놓쳤어요!',desc:'동물이 도망갔어요!',isMiss:true,idle:'',speed:0}
+var ANIMALS = {
+  fox:      {emoji:'🦊', name:'꼬미여우',  desc:'장난꾸러기 여우! 꼬리가 아주 복슬복슬해요.', idle:'idle-shake',  speed:4},
+  rabbit:   {emoji:'🐰', name:'토끼별',    desc:'달에서 온 토끼. 귀가 엄청 길어요!',           idle:'idle-bounce', speed:5},
+  penguin:  {emoji:'🐧', name:'펭이',      desc:'남극에서 온 친구. 춤을 아주 잘 춰요!',        idle:'idle-wiggle', speed:2},
+  frog:     {emoji:'🐸', name:'초록이',    desc:'연못의 수호자! 점프 실력이 최고예요.',         idle:'idle-bounce', speed:5},
+  bear:     {emoji:'🐻', name:'구름곰',    desc:'구름 위에서 내려온 포근한 곰.',               idle:'idle-bounce', speed:2},
+  cat:      {emoji:'🐱', name:'냥냥이',    desc:'새침하지만 사실 엄청 친해지고 싶어요.',        idle:'idle-float',  speed:3},
+  star:     {emoji:'🦄', name:'반짝이',    desc:'별빛으로 만들어진 신비로운 유니콘!',           idle:'idle-spin',   speed:4},
+  octopus:  {emoji:'🐙', name:'문어몽',    desc:'다리가 8개! 뭐든 척척 잡아드려요.',           idle:'idle-wiggle', speed:2},
+  lion:     {emoji:'🦁', name:'사자왕',    desc:'백수의 왕! 갈기가 멋있어요.',                 idle:'idle-shake',  speed:3},
+  panda:    {emoji:'🐼', name:'판다롱',    desc:'대나무를 엄청 좋아하는 귀요미!',              idle:'idle-bounce', speed:2},
+  dragon:   {emoji:'🐲', name:'드래곤이',  desc:'하늘을 나는 신비로운 용이에요.',               idle:'idle-float',  speed:6},
+  hamster:  {emoji:'🐹', name:'햄찌',      desc:'볼 주머니에 뭐든 넣는 귀여운 친구!',          idle:'idle-shake',  speed:6},
+  owl:      {emoji:'🦉', name:'부엉부엉',  desc:'밤의 수호자! 눈이 엄청 크답니다.',            idle:'idle-float',  speed:2},
+  dolphin:  {emoji:'🐬', name:'돌핀이',    desc:'바다의 악동! 점프를 잘 해요.',                idle:'idle-bounce', speed:5},
+  turtle:   {emoji:'🐢', name:'거북이',    desc:'느리지만 끝까지 포기하지 않아요!',             idle:'idle-float',  speed:1},
+  chick:    {emoji:'🐥', name:'삐약이',    desc:'막 태어난 아기 병아리예요. 너무 귀여워요!',    idle:'idle-bounce', speed:4},
+  koala:    {emoji:'🐨', name:'코알라몽',  desc:'유칼립투스만 먹는 호주 친구!',                idle:'idle-float',  speed:1},
+  crab:     {emoji:'🦀', name:'집게리',    desc:'집게발로 뭐든 집을 수 있어요!',               idle:'idle-shake',  speed:3},
+  elephant: {emoji:'🐘', name:'코끼리킹',  desc:'코가 엄청 길어요. 기억력도 최고!',            idle:'idle-bounce', speed:2},
+  wolf:     {emoji:'🐺', name:'늑대별',    desc:'달밤에 우우~ 노래하는 멋진 친구!',            idle:'idle-shake',  speed:5},
+  miss:     {emoji:'❓', name:'동물을 놓쳤어요!', desc:'동물이 도망갔어요!', isMiss:true, idle:'', speed:0}
 };
 
+var player = null;
+var camStream = null, camTimer = null, detector = null;
+var cooldown = false, pendingCapture = null;
+var arTimer = null, arEscTimer = null;
+var arWX = 0, arWY = 0, arVx = 0, arVy = 0;
+var gyroX = 0, gyroY = 0, lastGamma = null, lastBeta = null;
+
 // ── 오디오 ──
-var audioCtx=null;
+var audioCtx = null;
 function getCtx(){
-  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(!audioCtx) audioCtx = new(window.AudioContext||window.webkitAudioContext)();
   if(audioCtx.state==='suspended') audioCtx.resume();
   return audioCtx;
 }
-
-// 배경음악
-var bgNodes=[];
+var bgNodes = [], bgLoop = null;
 function startBGM(){
   stopBGM();
-  var ctx=getCtx();
-  // 밝고 귀여운 루프 멜로디 (C장조)
-  var notes=[523,659,784,659,523,392,440,523, 659,784,880,784,659,523,587,659];
-  var dur=0.18, t=ctx.currentTime;
+  var ctx = getCtx();
+  var notes = [523,659,784,659,523,392,440,523,659,784,880,784,659,523,587,659];
+  var dur = 0.18, t = ctx.currentTime;
   function playLoop(){
     notes.forEach(function(hz,i){
-      var o=ctx.createOscillator();
-      var g=ctx.createGain();
-      o.type='triangle';
-      o.frequency.value=hz;
+      var o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='triangle'; o.frequency.value=hz;
       g.gain.setValueAtTime(0,t+i*dur);
       g.gain.linearRampToValueAtTime(0.12,t+i*dur+0.02);
       g.gain.linearRampToValueAtTime(0,t+i*dur+dur-0.02);
@@ -244,37 +231,29 @@ function startBGM(){
       o.start(t+i*dur); o.stop(t+i*dur+dur);
       bgNodes.push(o);
     });
-    // 화음 추가
     [392,494,587,494].forEach(function(hz,i){
-      var o=ctx.createOscillator();
-      var g=ctx.createGain();
-      o.type='sine';
-      o.frequency.value=hz;
+      var o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='sine'; o.frequency.value=hz;
       g.gain.setValueAtTime(0.05,t+i*dur*4);
       g.gain.linearRampToValueAtTime(0,t+i*dur*4+dur*4-0.05);
       o.connect(g); g.connect(ctx.destination);
       o.start(t+i*dur*4); o.stop(t+i*dur*4+dur*4);
       bgNodes.push(o);
     });
-    t+=notes.length*dur;
-    bgLoop=setTimeout(playLoop,notes.length*dur*1000-100);
+    t += notes.length*dur;
+    bgLoop = setTimeout(playLoop, notes.length*dur*1000-100);
   }
   playLoop();
 }
-var bgLoop=null;
 function stopBGM(){
   if(bgLoop){clearTimeout(bgLoop);bgLoop=null;}
   bgNodes.forEach(function(o){try{o.stop();}catch(e){}});
-  bgNodes=[];
+  bgNodes = [];
 }
-
-// 포획 성공 효과음
 function playCatchSFX(){
-  var ctx=getCtx();
-  var t=ctx.currentTime;
+  var ctx=getCtx(), t=ctx.currentTime;
   [[523,0],[659,0.1],[784,0.2],[1047,0.3],[1319,0.4]].forEach(function(p){
-    var o=ctx.createOscillator();
-    var g=ctx.createGain();
+    var o=ctx.createOscillator(), g=ctx.createGain();
     o.type='sine'; o.frequency.value=p[0];
     g.gain.setValueAtTime(0,t+p[1]);
     g.gain.linearRampToValueAtTime(0.3,t+p[1]+0.03);
@@ -282,23 +261,16 @@ function playCatchSFX(){
     o.connect(g); g.connect(ctx.destination);
     o.start(t+p[1]); o.stop(t+p[1]+0.15);
   });
-  // 반짝 효과
-  var o2=ctx.createOscillator();
-  var g2=ctx.createGain();
+  var o2=ctx.createOscillator(), g2=ctx.createGain();
   o2.type='triangle'; o2.frequency.value=2000;
-  g2.gain.setValueAtTime(0.15,t+0.5);
-  g2.gain.linearRampToValueAtTime(0,t+0.8);
+  g2.gain.setValueAtTime(0.15,t+0.5); g2.gain.linearRampToValueAtTime(0,t+0.8);
   o2.connect(g2); g2.connect(ctx.destination);
   o2.start(t+0.5); o2.stop(t+0.8);
 }
-
-// 놓쳤을 때 효과음
 function playMissSFX(){
-  var ctx=getCtx();
-  var t=ctx.currentTime;
+  var ctx=getCtx(), t=ctx.currentTime;
   [[400,0],[350,0.15],[280,0.3],[220,0.45]].forEach(function(p){
-    var o=ctx.createOscillator();
-    var g=ctx.createGain();
+    var o=ctx.createOscillator(), g=ctx.createGain();
     o.type='sawtooth'; o.frequency.value=p[0];
     g.gain.setValueAtTime(0,t+p[1]);
     g.gain.linearRampToValueAtTime(0.2,t+p[1]+0.04);
@@ -307,45 +279,36 @@ function playMissSFX(){
     o.start(t+p[1]); o.stop(t+p[1]+0.15);
   });
 }
-
-// AR 등장 효과음
 function playAppearSFX(){
-  var ctx=getCtx();
-  var t=ctx.currentTime;
-  var o=ctx.createOscillator();
-  var g=ctx.createGain();
+  var ctx=getCtx(), t=ctx.currentTime;
+  var o=ctx.createOscillator(), g=ctx.createGain();
   o.type='sine';
   o.frequency.setValueAtTime(300,t);
   o.frequency.linearRampToValueAtTime(800,t+0.3);
-  g.gain.setValueAtTime(0.2,t);
-  g.gain.linearRampToValueAtTime(0,t+0.4);
+  g.gain.setValueAtTime(0.2,t); g.gain.linearRampToValueAtTime(0,t+0.4);
   o.connect(g); g.connect(ctx.destination);
   o.start(t); o.stop(t+0.4);
 }
-var camStream=null, camTimer=null, detector=null;
-var cooldown=false, pendingCapture=null;
-var arTimer=null, arWX=0, arWY=0, arVx=0, arVy=0;
-var gyroX=0, gyroY=0, lastGamma=null, lastBeta=null;
-var arEscTimer=null;
 
+// ── 공통 ──
 function savePlayer(){sessionStorage.setItem('p',JSON.stringify(player));}
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
 function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
 function setTopbars(){
-  if(!player)return;
-  var cnt=player.caught.length+'/'+Object.keys(ANIMALS).length+' 포획';
+  if(!player) return;
+  var cnt = player.caught.length+'/'+Object.keys(ANIMALS).length+' 포획';
   ['sc','cp','dx'].forEach(function(p){
     var n=document.getElementById(p+'-name'), c=document.getElementById(p+'-count');
-    if(n)n.textContent=player.name+'의 탐험';
-    if(c)c.textContent=cnt;
+    if(n) n.textContent=player.name+'의 탐험';
+    if(c) c.textContent=cnt;
   });
 }
 
 // ── 시작 ──
 function onStart(){
-  var n=document.getElementById('name-input').value.trim();
+  var n = document.getElementById('name-input').value.trim();
   if(!n){toast('이름을 입력해 주세요!');return;}
-  player={name:n,caught:[]};
+  player = {name:n, caught:[]};
   savePlayer();
   setTopbars();
   startBGM();
@@ -354,7 +317,7 @@ function onStart(){
 
 // ── 스캔 ──
 function goScan(){
-  cooldown=false; pendingCapture=null;
+  cooldown = false; pendingCapture = null;
   stopArMove(); stopGyro();
   setTopbars();
   show('s-scan');
@@ -363,79 +326,62 @@ function goScan(){
 
 function startCam(){
   stopCam();
-  var msg=document.getElementById('scan-msg');
-  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
-  var constraints={video:{facingMode:'environment'}};
+  var msg = document.getElementById('scan-msg');
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  var constraints = {video:{facingMode:'environment'}};
   if(!isIOS){constraints.video.width={ideal:1280};constraints.video.height={ideal:720};}
   navigator.mediaDevices.getUserMedia(constraints).then(function(s){
-    camStream=s;
-    var v=document.getElementById('cam-video');
-    v.srcObject=s; v.play();
-    msg.textContent='QR을 화면 중앙에 맞춰보세요';
-    if(!isIOS&&'BarcodeDetector' in window){
-      detector=new BarcodeDetector({formats:['qr_code']});
-      camTimer=setInterval(scanWithDetector,300);
+    camStream = s;
+    var v = document.getElementById('cam-video');
+    v.srcObject = s; v.play();
+    msg.textContent = 'QR을 화면 중앙에 맞춰보세요';
+    if(!isIOS && 'BarcodeDetector' in window){
+      detector = new BarcodeDetector({formats:['qr_code']});
+      camTimer = setInterval(scanWithDetector, 300);
     } else {
-      loadJsQR(function(){camTimer=setInterval(scanWithJsQR,150);});
+      loadJsQR(function(){camTimer = setInterval(scanWithJsQR, 150);});
     }
   }).catch(function(){msg.textContent='카메라 권한을 허용해주세요';});
 }
 
-function showDetectBox(location){
-  var wrap=document.getElementById('cam-wrap');
-  var box=document.getElementById('detect-box');
-  if(!location||!wrap){box.className='';return;}
-  var vw=wrap.offsetWidth, vh=wrap.offsetHeight;
-  var vv=document.getElementById('cam-video');
-  var scaleX=vw/(vv.videoWidth||1), scaleY=vh/(vv.videoHeight||1);
-  var pts=location.topLeftCorner;
-  var pts2=location.bottomRightCorner;
-  var x=pts.x*scaleX, y=pts.y*scaleY;
-  var w=(pts2.x-pts.x)*scaleX, h=(pts2.y-pts.y)*scaleY;
-  var pad=8;
+function loadJsQR(cb){
+  if(window.jsQR){cb();return;}
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
+  s.onload = cb; document.head.appendChild(s);
+}
+
+// QR 감지 박스
+function showDetectBox(x,y,w,h){
+  var box = document.getElementById('detect-box');
+  var pad = 8;
   box.style.left=(x-pad)+'px'; box.style.top=(y-pad)+'px';
   box.style.width=(w+pad*2)+'px'; box.style.height=(h+pad*2)+'px';
   box.className='active';
 }
-
-function hideDetectBox(){
-  document.getElementById('detect-box').className='';
-}
-
+function hideDetectBox(){document.getElementById('detect-box').className='';}
 function flashSuccessBox(){
   var box=document.getElementById('detect-box');
   box.className='active success';
   setTimeout(function(){box.className='';},600);
 }
-  if(window.jsQR){cb();return;}
-  var s=document.createElement('script');
-  s.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
-  s.onload=cb; document.head.appendChild(s);
-}
 
 function scanWithDetector(){
-  if(cooldown)return;
-  var v=document.getElementById('cam-video');
-  if(!v.videoWidth)return;
+  if(cooldown) return;
+  var v = document.getElementById('cam-video');
+  if(!v.videoWidth) return;
   detector.detect(v).then(function(codes){
     if(codes.length>0){
-      // 감지 박스 표시 (BarcodeDetector는 cornerPoints 제공)
-      var c=codes[0];
-      if(c.cornerPoints&&c.cornerPoints.length>=2){
+      var c = codes[0];
+      if(c.cornerPoints && c.cornerPoints.length>=2){
         var wrap=document.getElementById('cam-wrap');
-        var vw=wrap.offsetWidth, vh=wrap.offsetHeight;
-        var vv=document.getElementById('cam-video');
-        var scaleX=vw/(vv.videoWidth||1), scaleY=vh/(vv.videoHeight||1);
-        var pts=c.cornerPoints;
-        var xs=pts.map(function(p){return p.x;}), ys=pts.map(function(p){return p.y;});
+        var scaleX=wrap.offsetWidth/(v.videoWidth||1), scaleY=wrap.offsetHeight/(v.videoHeight||1);
+        var xs=c.cornerPoints.map(function(p){return p.x;}), ys=c.cornerPoints.map(function(p){return p.y;});
         var minX=Math.min.apply(null,xs), minY=Math.min.apply(null,ys);
         var maxX=Math.max.apply(null,xs), maxY=Math.max.apply(null,ys);
-        var pad=8, box=document.getElementById('detect-box');
-        box.style.left=(minX*scaleX-pad)+'px'; box.style.top=(minY*scaleY-pad)+'px';
-        box.style.width=((maxX-minX)*scaleX+pad*2)+'px'; box.style.height=((maxY-minY)*scaleY+pad*2)+'px';
-        box.className='active';
+        showDetectBox(minX*scaleX, minY*scaleY, (maxX-minX)*scaleX, (maxY-minY)*scaleY);
       }
-      handleQR(codes[0].rawValue);
+      handleQR(c.rawValue);
     } else {
       hideDetectBox();
     }
@@ -443,15 +389,22 @@ function scanWithDetector(){
 }
 
 function scanWithJsQR(){
-  if(cooldown)return;
+  if(cooldown) return;
   var v=document.getElementById('cam-video'), c=document.getElementById('cam-canvas');
-  if(!v.videoWidth)return;
+  if(!v.videoWidth) return;
   c.width=v.videoWidth; c.height=v.videoHeight;
   var ctx=c.getContext('2d',{willReadFrequently:true});
   ctx.drawImage(v,0,0);
   var code=jsQR(ctx.getImageData(0,0,c.width,c.height).data,c.width,c.height,{inversionAttempts:'attemptBoth'});
   if(code){
-    showDetectBox(code.location);
+    var wrap=document.getElementById('cam-wrap');
+    var scaleX=wrap.offsetWidth/(v.videoWidth||1), scaleY=wrap.offsetHeight/(v.videoHeight||1);
+    var loc=code.location;
+    var xs=[loc.topLeftCorner.x,loc.topRightCorner.x,loc.bottomLeftCorner.x,loc.bottomRightCorner.x];
+    var ys=[loc.topLeftCorner.y,loc.topRightCorner.y,loc.bottomLeftCorner.y,loc.bottomRightCorner.y];
+    var minX=Math.min.apply(null,xs), minY=Math.min.apply(null,ys);
+    var maxX=Math.max.apply(null,xs), maxY=Math.max.apply(null,ys);
+    showDetectBox(minX*scaleX, minY*scaleY, (maxX-minX)*scaleX, (maxY-minY)*scaleY);
     handleQR(code.data);
   } else {
     hideDetectBox();
@@ -459,16 +412,17 @@ function scanWithJsQR(){
 }
 
 function handleQR(data){
-  if(cooldown)return;
-  cooldown=true;
-  var m=data.match(/[?&]animal=([a-z]+)/);
-  if(m&&ANIMALS[m[1]]){
+  if(cooldown) return;
+  cooldown = true;
+  var m = data.match(/[?&]animal=([a-z]+)/);
+  if(m && ANIMALS[m[1]]){
     var id=m[1], a=ANIMALS[id];
     flashSuccessBox();
     setTimeout(function(){
       hideDetectBox();
-      if(a.isMiss){stopCam();doCapture(id);}
-      else{stopCam();showAR(id,a);}
+      stopCam();
+      if(a.isMiss){doCapture(id);}
+      else{showAR(id,a);}
     },400);
   } else {
     hideDetectBox();
@@ -484,110 +438,84 @@ function stopCam(){
 
 // ── AR ──
 function showAR(id,a){
-  pendingCapture=id;
-
-  // 새 카메라 스트림을 AR 배경으로
-  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
-  var constraints={video:{facingMode:'environment'}};
+  pendingCapture = id;
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  var constraints = {video:{facingMode:'environment'}};
   if(!isIOS){constraints.video.width={ideal:1280};constraints.video.height={ideal:720};}
   navigator.mediaDevices.getUserMedia(constraints).then(function(s){
-    camStream=s;
-    var bg=document.getElementById('ar-bg');
-    bg.srcObject=s; bg.play();
+    camStream = s;
+    var bg = document.getElementById('ar-bg');
+    bg.srcObject = s; bg.play();
   }).catch(function(){});
 
-  // 동물 초기 월드좌표 (화면 중심 기준 오프셋)
-  var angle=Math.random()*Math.PI*2;
-  arWX=Math.cos(angle)*60; arWY=Math.sin(angle)*60;
-  var spd=a.speed||3;
-  arVx=(Math.random()>0.5?1:-1)*spd;
-  arVy=(Math.random()>0.5?1:-1)*spd;
+  var angle = Math.random()*Math.PI*2;
+  arWX = Math.cos(angle)*60; arWY = Math.sin(angle)*60;
+  var spd = a.speed||3;
+  arVx = (Math.random()>0.5?1:-1)*spd;
+  arVy = (Math.random()>0.5?1:-1)*spd;
   gyroX=0; gyroY=0; lastGamma=null; lastBeta=null;
 
-  // AR 화면 표시
-  document.getElementById('ar-title').textContent=a.name+' 출현!';
-  var el=document.getElementById('ar-animal');
-  el.textContent=a.emoji;
-  el.style.left=(window.innerWidth/2)+'px';
-  el.style.top=(window.innerHeight/2)+'px';
-  el.className='popping';
-  document.getElementById('ar-screen').style.display='block';
+  document.getElementById('ar-title').textContent = a.name+' 출현!';
+  document.getElementById('ar-close-btn').style.display = 'none';
+  var el = document.getElementById('ar-animal');
+  el.textContent = a.emoji;
+  el.style.left = (window.innerWidth/2)+'px';
+  el.style.top  = (window.innerHeight/2)+'px';
+  el.className  = 'popping';
+  document.getElementById('ar-screen').style.display = 'block';
 
   setTimeout(function(){
-    el.className=a.idle;
+    el.className = a.idle;
     playAppearSFX();
     startArMove(a);
     startGyro();
-    // 5초 후 '놓친동물 다시잡기' 버튼 표시
-    arEscTimer=setTimeout(function(){
-      document.getElementById('ar-close-btn').style.display='block';
-      document.getElementById('ar-close-btn').textContent='놓친 동물 다시잡기 🔄';
+    arEscTimer = setTimeout(function(){
+      document.getElementById('ar-close-btn').style.display = 'block';
     },5000);
   },500);
 }
 
 function getARPos(){
-  var W=window.innerWidth, H=window.innerHeight;
-  return {
-    x: W/2 + arWX - gyroX,
-    y: H/2 + arWY - gyroY
-  };
+  return {x: window.innerWidth/2+arWX-gyroX, y: window.innerHeight/2+arWY-gyroY};
 }
 
 function updateARAnimal(){
-  var pos=getARPos();
-  var el=document.getElementById('ar-animal');
-  el.style.left=pos.x+'px';
-  el.style.top=pos.y+'px';
+  var pos = getARPos();
+  var el  = document.getElementById('ar-animal');
+  el.style.left = pos.x+'px';
+  el.style.top  = pos.y+'px';
+  el.style.transform = arVx<0 ? 'translate(-50%,-50%) scaleX(-1)' : 'translate(-50%,-50%)';
 
-  // 방향에 따라 좌우 반전
-  var baseTransform='translate(-50%,-50%)';
-  if(arVx<0) baseTransform+=' scaleX(-1)';
-  el.style.transform=baseTransform;
-
-  // 레이더
   var dx=pos.x-window.innerWidth/2, dy=pos.y-window.innerHeight/2;
-  var maxR=22, cx=32, cy=32;
-  var len=Math.sqrt(dx*dx+dy*dy)||1;
-  var rx=cx+Math.min(Math.abs(dx)/len,1)*Math.min(len/8,maxR)*(dx<0?-1:1);
-  var ry=cy+Math.min(Math.abs(dy)/len,1)*Math.min(len/8,maxR)*(dy<0?-1:1);
+  var len=Math.sqrt(dx*dx+dy*dy)||1, maxR=22;
+  var rx=32+Math.min(len/8,maxR)*(dx/len);
+  var ry=32+Math.min(len/8,maxR)*(dy/len);
   var dot=document.getElementById('ar-radar-dot');
   dot.style.left=Math.max(6,Math.min(58,rx))+'px';
-  dot.style.top=Math.max(6,Math.min(58,ry))+'px';
+  dot.style.top =Math.max(6,Math.min(58,ry))+'px';
 
-  // 힌트
+  var W=window.innerWidth, H=window.innerHeight;
+  var inView=pos.x>40&&pos.x<W-40&&pos.y>80&&pos.y<H-80;
   var hint=document.getElementById('ar-hint');
-  var inView=pos.x>40&&pos.x<window.innerWidth-40&&pos.y>80&&pos.y<window.innerHeight-80;
-  hint.textContent=inView?'동물을 탭해서 포획하세요!':'📡 태블릿을 기울여 동물을 쫓아가세요!';
-  hint.className=inView?'inview':'';
+  hint.textContent = inView?'동물을 탭해서 포획하세요!':'📡 태블릿을 기울여 동물을 쫓아가세요!';
+  hint.className   = inView?'inview':'';
 }
 
 function startArMove(a){
   stopArMove();
-  // 동물이 카메라를 피해 도망다니는 로직
-  arTimer=setInterval(function(){
+  arTimer = setInterval(function(){
     var W=window.innerWidth, H=window.innerHeight;
     var pos=getARPos();
-
-    // 화면 안에 있으면 도망치려고 함
     var inView=pos.x>0&&pos.x<W&&pos.y>0&&pos.y<H;
     if(inView){
-      // 화면 중심에서 멀어지는 방향으로 가속
       var cx=W/2, cy=H/2;
       var dx=pos.x-cx, dy=pos.y-cy;
       var len=Math.sqrt(dx*dx+dy*dy)||1;
-      arVx+=dx/len*0.3;
-      arVy+=dy/len*0.3;
+      arVx+=dx/len*0.3; arVy+=dy/len*0.3;
     }
-
-    // 속도 제한
-    var spd=a.speed||3;
-    var vlen=Math.sqrt(arVx*arVx+arVy*arVy)||1;
+    var spd=a.speed||3, vlen=Math.sqrt(arVx*arVx+arVy*arVy)||1;
     if(vlen>spd*2){arVx=arVx/vlen*spd*2;arVy=arVy/vlen*spd*2;}
-
     arWX+=arVx; arWY+=arVy;
-
-    // 랜덤 방향 변화
     if(Math.random()<0.02){
       arVx+=(Math.random()-0.5)*spd;
       arVy+=(Math.random()-0.5)*spd;
@@ -603,16 +531,15 @@ function stopArMove(){
 }
 
 function startGyro(){
-  if(!window.DeviceOrientationEvent)return;
+  if(!window.DeviceOrientationEvent) return;
   if(typeof DeviceOrientationEvent.requestPermission==='function'){
     DeviceOrientationEvent.requestPermission().then(function(r){
-      if(r==='granted')window.addEventListener('deviceorientation',onGyro);
+      if(r==='granted') window.addEventListener('deviceorientation',onGyro);
     }).catch(function(){});
   } else {
     window.addEventListener('deviceorientation',onGyro);
   }
 }
-
 function onGyro(e){
   if(lastGamma===null){lastGamma=e.gamma||0;lastBeta=e.beta||0;return;}
   gyroX+=(e.gamma-lastGamma)*4;
@@ -620,20 +547,18 @@ function onGyro(e){
   lastGamma=e.gamma; lastBeta=e.beta;
   updateARAnimal();
 }
-
 function stopGyro(){
   window.removeEventListener('deviceorientation',onGyro);
-  lastGamma=null; lastBeta=null; gyroX=0; gyroY=0;
+  lastGamma=null;lastBeta=null;gyroX=0;gyroY=0;
 }
 
 function confirmCapture(){
-  if(!pendingCapture)return;
+  if(!pendingCapture) return;
   stopArMove(); stopGyro();
   var id=pendingCapture; pendingCapture=null;
-  // 포획 플래시
+  playCatchSFX();
   var flash=document.getElementById('ar-flash');
   flash.style.transition='opacity 0.05s'; flash.style.opacity='1';
-  playCatchSFX();
   setTimeout(function(){
     flash.style.transition='opacity 0.3s'; flash.style.opacity='0';
     setTimeout(function(){
@@ -649,7 +574,6 @@ function closeAR(){
   if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
   document.getElementById('ar-screen').style.display='none';
   pendingCapture=null; cooldown=false;
-  // 동물 다시 등장 - 같은 동물 재시도
   goScan();
 }
 
@@ -668,7 +592,7 @@ function doCapture(id){
     c.innerHTML='<span class="sparkle">✨</span><span class="cap-emoji">'+a.emoji+'</span><div class="cap-title">'+a.name+' 포획!</div><div class="cap-desc">'+a.desc+'</div><div class="cap-new">🎉 새로운 동물 발견!</div>';
     var real=Object.keys(ANIMALS).filter(function(k){return !ANIMALS[k].isMiss;});
     var cReal=player.caught.filter(function(k){return !ANIMALS[k].isMiss;});
-    if(cReal.length===real.length)setTimeout(function(){toast('🏆 모든 동물 포획 완료!');},600);
+    if(cReal.length===real.length) setTimeout(function(){toast('🏆 모든 동물 포획 완료!');},600);
   } else {
     c.innerHTML='<div class="already"><span class="em">'+a.emoji+'</span><p>'+a.name+' - 이미 포획했어요!</p><small>다른 QR을 찾아보세요</small></div>';
   }
@@ -697,8 +621,9 @@ function goDex(){
   show('s-dex');
 }
 
+// ── 리셋 ──
 function resetGame(){
-  if(!confirm('처음부터 다시 시작할까요?'))return;
+  if(!confirm('처음부터 다시 시작할까요?')) return;
   stopCam(); stopArMove(); stopGyro(); stopBGM();
   player=null; sessionStorage.clear();
   document.getElementById('name-input').value='';
