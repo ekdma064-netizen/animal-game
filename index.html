@@ -27,7 +27,7 @@ input[type=text]:focus{border-color:#2d5be3}
 /* 동물 이미지 크기 */
 .animal-img{width:130px;height:130px;object-fit:contain;display:block;margin:0 auto 8px}
 .dex-img{width:40px;height:40px;object-fit:contain;display:block;margin:0 auto 2px}
-.animal-img-ar{width:min(30vw,45vh);height:min(30vw,45vh);object-fit:contain;display:block;transform-origin:50% 90%}
+.animal-img-ar{width:min(55vw,62vh);height:min(55vw,62vh);object-fit:contain;display:block;transform-origin:50% 90%}
 
 /* 스캔 카메라 */
 #cam-wrap{position:relative;width:100%;max-width:340px;border-radius:16px;overflow:hidden;background:#000;margin-bottom:10px}
@@ -420,6 +420,7 @@ function onStart(){
   savePlayer();
   setTopbars();
   startBGM();
+  preTrimAll();
   goScan();
 }
 
@@ -570,7 +571,10 @@ function showAR(id,a){
   document.getElementById('ar-close-btn').style.display = 'none';
   var el = document.getElementById('ar-animal');
   el.style.animation = '';
-  el.innerHTML = '<span class="ar-body"><span class="ar-shadow"></span><img src="'+a.img+'" class="animal-img-ar"></span>';
+  el.innerHTML = '<span class="ar-body"><span class="ar-shadow"></span><img src="'+(trimCache[a.img]||a.img)+'" class="animal-img-ar"></span>';
+  if(!trimCache[a.img]) trimImage(a.img, function(url){
+    var im=document.querySelector('#ar-animal img'); if(im && pendingCapture===id) im.src=url;
+  });
   el.onclick = confirmCapture;
   el.style.opacity = '1';
   updateARAnimal();
@@ -613,6 +617,33 @@ function spawnDust(x,y){
   document.getElementById('ar-screen').appendChild(d);
   setTimeout(function(){d.remove();},650);
 }
+
+// PNG 둘레의 투명한 여백을 잘라내서 동물이 화면에 꽉 차 보이게
+var trimCache = {};
+function trimImage(src, cb){
+  var im=new Image();
+  im.onload=function(){
+    try{
+      var c=document.createElement('canvas'); c.width=im.naturalWidth; c.height=im.naturalHeight;
+      var x=c.getContext('2d'); x.drawImage(im,0,0);
+      var d=x.getImageData(0,0,c.width,c.height).data, w=c.width, h=c.height;
+      var minX=w,minY=h,maxX=-1,maxY=-1;
+      for(var y=0;y<h;y+=2){ for(var xx=0;xx<w;xx+=2){
+        if(d[(y*w+xx)*4+3]>20){ if(xx<minX)minX=xx; if(xx>maxX)maxX=xx; if(y<minY)minY=y; if(y>maxY)maxY=y; }
+      }}
+      if(maxX<0) return;
+      var pad=4; minX=Math.max(0,minX-pad); minY=Math.max(0,minY-pad); maxX=Math.min(w-1,maxX+pad); maxY=Math.min(h-1,maxY+pad);
+      var cw=maxX-minX+1, ch=maxY-minY+1;
+      if(cw>w*0.92 && ch>h*0.92) { trimCache[src]=src; return; }   // 여백이 거의 없으면 그대로
+      var o=document.createElement('canvas'); o.width=cw; o.height=ch;
+      o.getContext('2d').drawImage(c,minX,minY,cw,ch,0,0,cw,ch);
+      trimCache[src]=o.toDataURL('image/png'); cb(trimCache[src]);
+    }catch(e){ trimCache[src]=src; }   // 파일을 직접 열어 보안상 읽을 수 없을 때는 원본 사용
+  };
+  im.src=src;
+}
+// 게임 시작 때 미리 잘라두기
+function preTrimAll(){ Object.keys(ANIMALS).forEach(function(k){ var s=ANIMALS[k].img; if(s && !trimCache[s]) trimImage(s,function(){}); }); }
 
 // 동물 그림 크기의 절반(px)
 function arHalf(){
