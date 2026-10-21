@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>교실 동물 탐험대</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Sans KR',sans-serif;background:#f0f7ff;min-height:100vh}
@@ -22,6 +23,11 @@ input[type=text]:focus{border-color:#2d5be3}
 .tb-name{font-size:14px;font-weight:700;color:#2d5be3}
 .tb-count{font-size:13px;color:#666}
 .has-topbar{padding-top:60px}
+
+/* 동물 이미지 크기 */
+.animal-img{width:130px;height:130px;object-fit:contain;display:block;margin:0 auto 8px}
+.dex-img{width:40px;height:40px;object-fit:contain;display:block;margin:0 auto 2px}
+.animal-img-ar{width:110px;height:110px;object-fit:contain;display:block;transform-origin:50% 90%}
 
 /* 스캔 카메라 */
 #cam-wrap{position:relative;width:100%;max-width:340px;border-radius:16px;overflow:hidden;background:#000;margin-bottom:10px}
@@ -53,39 +59,57 @@ input[type=text]:focus{border-color:#2d5be3}
 /* AR 전체화면 */
 #ar-screen{display:none;position:fixed;inset:0;z-index:100;background:#000;overflow:hidden}
 #ar-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-#ar-animal{position:absolute;font-size:90px;cursor:pointer;user-select:none;line-height:1;filter:drop-shadow(0 6px 20px rgba(0,0,0,.7));transform:translate(-50%,-50%)}
-#ar-animal.popping{animation:ar-pop 0.5s cubic-bezier(.17,.67,.35,1.5) forwards}
-@keyframes ar-pop{0%{transform:translate(-50%,-50%) scale(0) rotate(-20deg)}60%{transform:translate(-50%,-50%) scale(1.3) rotate(5deg)}100%{transform:translate(-50%,-50%) scale(1) rotate(0)}}
-/* 동물별 CSS 애니메이션 */
-@keyframes run{0%,100%{transform:translateY(0) rotate(-3deg) scaleX(1)}25%{transform:translateY(-8px) rotate(3deg) scaleX(1.05)}50%{transform:translateY(0) rotate(-3deg) scaleX(0.95)}75%{transform:translateY(-5px) rotate(2deg) scaleX(1.05)}}
-@keyframes jump{0%,100%{transform:translateY(0) scaleY(1) scaleX(1)}30%{transform:translateY(-30px) scaleY(1.1) scaleX(0.9)}60%{transform:translateY(0) scaleY(0.85) scaleX(1.15)}75%{transform:translateY(-10px) scaleY(1.05) scaleX(0.97)}}
-@keyframes melong{0%,60%,100%{transform:rotate(0deg) scale(1)}10%{transform:rotate(-15deg) scale(1.1)}20%{transform:rotate(15deg) scale(1.15)}30%{transform:rotate(-10deg) scale(1.1)}40%{transform:rotate(10deg) scale(1.05)}50%{transform:rotate(0deg) scale(1.1)}}
-@keyframes swim{0%,100%{transform:rotate(0deg) translateX(0)}25%{transform:rotate(10deg) translateX(8px)}75%{transform:rotate(-10deg) translateX(-8px)}}
-@keyframes waddle{0%,100%{transform:rotate(0deg) translateY(0)}25%{transform:rotate(10deg) translateY(-4px)}75%{transform:rotate(-10deg) translateY(-4px)}}
-@keyframes stomp{0%,100%{transform:scaleY(1) scaleX(1) translateY(0)}30%{transform:scaleY(0.85) scaleX(1.1) translateY(4px)}60%{transform:scaleY(1.1) scaleX(0.95) translateY(-6px)}}
-@keyframes fly{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-20px) rotate(-8deg)}75%{transform:translateY(-10px) rotate(8deg)}}
-@keyframes spin-dance{0%{transform:rotate(0deg) scale(1)}25%{transform:rotate(-20deg) scale(1.1)}50%{transform:rotate(0deg) scale(0.95)}75%{transform:rotate(20deg) scale(1.1)}100%{transform:rotate(0deg) scale(1)}}
-@keyframes crawl{0%,100%{transform:rotate(0deg) translateX(0) scaleX(1)}30%{transform:rotate(-5deg) translateX(-6px) scaleX(1.08)}70%{transform:rotate(5deg) translateX(6px) scaleX(0.95)}}
-@keyframes shake-head{0%,100%{transform:rotate(0deg) scale(1)}15%{transform:rotate(-20deg) scale(1.05)}35%{transform:rotate(20deg) scale(1.1)}55%{transform:rotate(-15deg) scale(1.05)}70%{transform:rotate(15deg) scale(1)}85%{transform:rotate(0deg) scale(1.08)}}
-@keyframes slow-walk{0%,100%{transform:translateY(0) rotate(0deg)}40%{transform:translateY(-4px) rotate(-2deg)}80%{transform:translateY(0) rotate(2deg)}}
-@keyframes claw{0%,100%{transform:scaleX(1) rotate(0deg)}20%{transform:scaleX(1.1) rotate(-8deg)}50%{transform:scaleX(0.9) rotate(8deg)}80%{transform:scaleX(1.05) rotate(-4deg)}}
-@keyframes trumpet{0%,100%{transform:scaleX(1) scaleY(1) rotate(0deg)}25%{transform:scaleX(0.9) scaleY(1.1) rotate(-3deg)}60%{transform:scaleX(1.1) scaleY(0.9) rotate(3deg)}}
-@keyframes howl{0%,70%,100%{transform:rotate(0deg) scale(1) translateY(0)}20%{transform:rotate(-5deg) scale(1.05) translateY(-5px)}40%{transform:rotate(5deg) scale(1.1) translateY(-10px)}55%{transform:rotate(0deg) scale(1.05) translateY(-8px)}}
+#ar-animal{position:absolute;cursor:pointer;user-select:none;-webkit-user-select:none;line-height:1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.6));transform:translate(-50%,-50%);padding:10px}
+#ar-animal .ar-body{position:relative;display:block}
+/* 발밑 그림자: 달릴 때 같이 커졌다 작아짐 */
+#ar-animal .ar-shadow{position:absolute;left:50%;bottom:-4px;width:70px;height:14px;margin-left:-35px;border-radius:50%;background:rgba(0,0,0,.35);filter:blur(2px);animation:shadow-bob .5s ease-in-out infinite}
+@keyframes shadow-bob{0%,100%{transform:scale(1);opacity:.45}50%{transform:scale(.7);opacity:.25}}
+/* 달리기 먼지 */
+.dust{position:absolute;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.75);pointer-events:none;animation:dust-fade .6s ease-out forwards}
+@keyframes dust-fade{0%{transform:translate(-50%,-50%) scale(.4);opacity:.8}100%{transform:translate(-50%,-80%) scale(1.6);opacity:0}}
 
-.anim-run{animation:run 0.5s ease-in-out infinite}
-.anim-jump{animation:jump 0.7s ease-in-out infinite}
+/* ── 동물별 모션 (img에 적용) ── */
+/* 달리기: 통통 튀며 앞으로 숙였다 펴기 */
+@keyframes run{0%{transform:translateY(0) rotate(-6deg) scaleY(.94) scaleX(1.06)}25%{transform:translateY(-18px) rotate(4deg) scaleY(1.06) scaleX(.95)}50%{transform:translateY(0) rotate(-6deg) scaleY(.92) scaleX(1.08)}75%{transform:translateY(-12px) rotate(3deg) scaleY(1.04) scaleX(.97)}100%{transform:translateY(0) rotate(-6deg) scaleY(.94) scaleX(1.06)}}
+/* 깡충: 웅크렸다가 높이 점프 */
+@keyframes jump{0%,100%{transform:translateY(0) scaleY(.8) scaleX(1.18)}15%{transform:translateY(-6px) scaleY(1.15) scaleX(.88)}45%{transform:translateY(-46px) scaleY(1.05) scaleX(.95) rotate(-6deg)}75%{transform:translateY(-6px) scaleY(1.1) scaleX(.92)}88%{transform:translateY(0) scaleY(.78) scaleX(1.2)}}
+@keyframes melong{0%,60%,100%{transform:rotate(0deg) scale(1)}10%{transform:rotate(-15deg) scale(1.1)}20%{transform:rotate(15deg) scale(1.15)}30%{transform:rotate(-10deg) scale(1.1)}40%{transform:rotate(10deg) scale(1.05)}50%{transform:rotate(0deg) scale(1.1)}}
+/* 헤엄: 몸 전체가 S자로 출렁 */
+@keyframes swim{0%,100%{transform:rotate(-12deg) translateY(0) scaleX(1)}25%{transform:rotate(0deg) translateY(-10px) scaleX(1.08)}50%{transform:rotate(12deg) translateY(0) scaleX(1)}75%{transform:rotate(0deg) translateY(8px) scaleX(.94)}}
+/* 뒤뚱: 좌우로 크게 기울며 걷기 */
+@keyframes waddle{0%,100%{transform:rotate(-14deg) translateY(0)}25%{transform:rotate(0deg) translateY(-10px)}50%{transform:rotate(14deg) translateY(0)}75%{transform:rotate(0deg) translateY(-10px)}}
+/* 쿵쿵: 무겁게 내려찍기 */
+@keyframes stomp{0%,100%{transform:scaleY(1) scaleX(1) translateY(0) rotate(0)}20%{transform:scaleY(1.06) scaleX(.96) translateY(-12px) rotate(-4deg)}40%{transform:scaleY(.82) scaleX(1.14) translateY(4px) rotate(0)}60%{transform:scaleY(1.06) scaleX(.96) translateY(-12px) rotate(4deg)}80%{transform:scaleY(.82) scaleX(1.14) translateY(4px) rotate(0)}}
+/* 날기: 위아래로 크게 떠오르며 날갯짓 */
+@keyframes fly{0%,100%{transform:translateY(0) rotate(-6deg) scaleY(1)}25%{transform:translateY(-30px) rotate(-12deg) scaleY(.9)}50%{transform:translateY(-14px) rotate(6deg) scaleY(1.08)}75%{transform:translateY(-34px) rotate(10deg) scaleY(.9)}}
+@keyframes spin-dance{0%{transform:rotate(0deg) scale(1) translateY(0)}25%{transform:rotate(-25deg) scale(1.12) translateY(-14px)}50%{transform:rotate(0deg) scale(.95) translateY(0)}75%{transform:rotate(25deg) scale(1.12) translateY(-14px)}100%{transform:rotate(0deg) scale(1) translateY(0)}}
+@keyframes crawl{0%,100%{transform:rotate(0deg) translateX(0) scaleX(1)}30%{transform:rotate(-5deg) translateX(-6px) scaleX(1.08)}70%{transform:rotate(5deg) translateX(6px) scaleX(.95)}}
+@keyframes shake-head{0%,100%{transform:rotate(0deg) scale(1) translateY(0)}15%{transform:rotate(-14deg) scale(1.05) translateY(-6px)}35%{transform:rotate(14deg) scale(1.08) translateY(0)}55%{transform:rotate(-10deg) scale(1.05) translateY(-6px)}75%{transform:rotate(10deg) scale(1) translateY(0)}}
+/* 느릿느릿: 한 발씩 천천히 */
+@keyframes slow-walk{0%,100%{transform:translateY(0) rotate(-4deg)}25%{transform:translateY(-6px) rotate(0)}50%{transform:translateY(0) rotate(4deg)}75%{transform:translateY(-6px) rotate(0)}}
+/* 집게: 옆으로 종종걸음 + 집게질 */
+@keyframes claw{0%,100%{transform:translateX(0) scaleX(1) rotate(0)}20%{transform:translateX(-8px) scaleX(1.12) rotate(-8deg) translateY(-4px)}50%{transform:translateX(0) scaleX(.9) rotate(0)}70%{transform:translateX(8px) scaleX(1.12) rotate(8deg) translateY(-4px)}}
+@keyframes trumpet{0%,100%{transform:scaleX(1) scaleY(1) rotate(0deg) translateY(0)}25%{transform:scaleX(.92) scaleY(1.1) rotate(-5deg) translateY(-10px)}50%{transform:scaleX(1.1) scaleY(.88) rotate(0) translateY(2px)}75%{transform:scaleX(.92) scaleY(1.1) rotate(5deg) translateY(-10px)}}
+@keyframes howl{0%,100%{transform:rotate(0deg) translateY(0) scaleY(.95)}25%{transform:rotate(-6deg) translateY(-20px) scaleY(1.06)}50%{transform:rotate(0deg) translateY(0) scaleY(.92)}75%{transform:rotate(6deg) translateY(-20px) scaleY(1.06)}}
+/* 쉬는 중: 두리번두리번 */
+@keyframes look-around{0%,100%{transform:rotate(0) translateY(0)}20%{transform:rotate(-10deg) translateY(-3px)}40%{transform:rotate(0) translateY(0)}60%{transform:rotate(10deg) translateY(-3px)}80%{transform:rotate(0) translateY(0)}}
+
+.anim-run{animation:run .45s linear infinite}
+.anim-jump{animation:jump .75s ease-in-out infinite}
 .anim-melong{animation:melong 1.2s ease-in-out infinite}
-.anim-swim{animation:swim 0.8s ease-in-out infinite}
-.anim-waddle{animation:waddle 0.5s ease-in-out infinite}
-.anim-stomp{animation:stomp 0.6s ease-in-out infinite}
-.anim-fly{animation:fly 0.9s ease-in-out infinite}
-.anim-spin-dance{animation:spin-dance 0.8s ease-in-out infinite}
-.anim-crawl{animation:crawl 0.7s ease-in-out infinite}
+.anim-swim{animation:swim .9s ease-in-out infinite}
+.anim-waddle{animation:waddle .55s ease-in-out infinite}
+.anim-stomp{animation:stomp .8s ease-in-out infinite}
+.anim-fly{animation:fly 1s ease-in-out infinite}
+.anim-spin-dance{animation:spin-dance .8s ease-in-out infinite}
+.anim-crawl{animation:crawl .7s ease-in-out infinite}
 .anim-shake-head{animation:shake-head 1s ease-in-out infinite}
-.anim-slow-walk{animation:slow-walk 1.5s ease-in-out infinite}
-.anim-claw{animation:claw 0.6s ease-in-out infinite}
-.anim-trumpet{animation:trumpet 0.7s ease-in-out infinite}
-.anim-howl{animation:howl 1.5s ease-in-out infinite}
+.anim-slow-walk{animation:slow-walk 1.3s ease-in-out infinite}
+.anim-claw{animation:claw .6s ease-in-out infinite}
+.anim-trumpet{animation:trumpet .8s ease-in-out infinite}
+.anim-howl{animation:howl .7s ease-in-out infinite}
+.anim-rest{animation:look-around 1.6s ease-in-out infinite}
+
 #ar-hud{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(0,0,0,.5),transparent)}
 #ar-title{color:#fff;font-size:16px;font-weight:700;text-shadow:0 2px 6px rgba(0,0,0,.8)}
 #ar-close-btn{display:none;background:rgba(255,100,100,.85);color:#fff;border:none;font-size:14px;font-weight:700;padding:10px 18px;border-radius:20px;cursor:pointer}
@@ -93,6 +117,8 @@ input[type=text]:focus{border-color:#2d5be3}
 #ar-hint.inview{background:linear-gradient(to top,rgba(45,91,227,.7),transparent)}
 #ar-radar{position:absolute;bottom:70px;right:16px;width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.45);border:1.5px solid rgba(255,255,255,.3)}
 #ar-radar-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:#ff4455;box-shadow:0 0 8px #ff4455;transform:translate(-50%,-50%)}
+#ar-arrow{position:absolute;width:0;height:0;border-top:18px solid transparent;border-bottom:18px solid transparent;border-left:30px solid #ff4455;filter:drop-shadow(0 0 6px rgba(255,68,85,.9));display:none;pointer-events:none;transform-origin:50% 50%;animation:arrow-blink .8s ease-in-out infinite}
+@keyframes arrow-blink{0%,100%{opacity:1}50%{opacity:.45}}
 #ar-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
 #ar-crosshair{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:.5}
 #ar-crosshair::before,#ar-crosshair::after{content:'';position:absolute;background:#fff}
@@ -118,21 +144,14 @@ input[type=text]:focus{border-color:#2d5be3}
   80%{transform:translateX(calc(-50% + 8px)) rotate(552deg)}
 }
 @keyframes pb-catch{
-  0%{transform:translateX(-50%) rotate(540deg) scale(1)}
-  50%{transform:translateX(-50%) rotate(540deg) scale(1.3)}
-  100%{transform:translateX(-50%) rotate(540deg) scale(0) opacity(0)}
+  0%{transform:translateX(-50%) rotate(540deg) scale(1);opacity:1}
+  50%{transform:translateX(-50%) rotate(540deg) scale(1.3);opacity:1}
+  100%{transform:translateX(-50%) rotate(540deg) scale(0);opacity:0}
 }
 @keyframes animal-absorbed{
   0%{transform:translate(-50%,-50%) scale(1);opacity:1}
   40%{transform:translate(-50%,-50%) scale(0.3);opacity:0.6}
   100%{transform:translate(-50%,-50%) scale(0);opacity:0}
-}
-@keyframes catch-flash{
-  0%,100%{opacity:0}
-  15%{opacity:0.6}
-  30%{opacity:0}
-  50%{opacity:0.4}
-  65%{opacity:0}
 }
 @keyframes star-burst{
   0%{transform:translate(-50%,-50%) scale(0);opacity:1}
@@ -144,22 +163,19 @@ input[type=text]:focus{border-color:#2d5be3}
   top:50%;left:50%;animation:star-burst 0.6s ease-out forwards;
 }
 #pb-stars::after{animation-delay:0.15s;font-size:16px}
-.cap-emoji{font-size:100px;animation:pop .5s ease-out;display:block;text-align:center;margin-bottom:4px}
 @keyframes pop{0%{transform:scale(0) rotate(-15deg);opacity:0}70%{transform:scale(1.2) rotate(4deg)}100%{transform:scale(1);opacity:1}}
+.cap-pop{animation:pop .5s ease-out}
 .cap-title{font-size:22px;font-weight:700;color:#2d5be3;text-align:center;margin-bottom:6px}
-.cap-desc{font-size:14px;color:#666;text-align:center;max-width:260px;line-height:1.6;margin-bottom:6px}
+.cap-desc{font-size:14px;color:#666;text-align:center;max-width:260px;line-height:1.6;margin:0 auto 6px}
 .cap-new{font-size:13px;font-weight:700;color:#ff6b00;text-align:center;margin-bottom:16px}
 .sparkle{font-size:28px;animation:spin 1.5s linear infinite;display:block;text-align:center}
 @keyframes spin{to{transform:rotate(360deg)}}
 .already{background:#fff3e0;border:2px solid #ffb74d;border-radius:14px;padding:16px;text-align:center;max-width:300px;width:100%;margin-bottom:16px}
-.already .em{font-size:48px;display:block;margin-bottom:6px}
 .already p{font-size:15px;color:#e65100;font-weight:700}
 .already small{font-size:13px;color:#888}
 .dex-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;max-width:400px;margin-bottom:16px}
 .dex-card{background:#fff;border-radius:12px;padding:10px 4px;text-align:center;border:2px solid #e0eaff}
 .dex-card.caught{border-color:#2d5be3;background:#f0f4ff}
-.dex-card.unknown{filter:grayscale(1);opacity:.35}
-.dex-emoji{font-size:28px;display:block;margin-bottom:2px}
 .dex-label{font-size:11px;font-weight:700;color:#333}
 .dex-num{font-size:10px;color:#aaa}
 .count-bar{background:#e0eaff;border-radius:10px;padding:7px 16px;font-size:14px;font-weight:700;color:#2d5be3;margin-bottom:16px}
@@ -215,6 +231,7 @@ input[type=text]:focus{border-color:#2d5be3}
   <div id="ar-crosshair"></div>
   <span id="ar-animal" onclick="confirmCapture()"></span>
   <div id="ar-radar"><div id="ar-radar-dot"></div></div>
+  <div id="ar-arrow"></div>
   <div id="ar-hud">
     <div id="ar-title"></div>
     <button id="ar-close-btn" onclick="closeAR()">놓친 동물 다시잡기 🔄</button>
@@ -246,20 +263,29 @@ input[type=text]:focus{border-color:#2d5be3}
 <div class="toast" id="toast"></div>
 
 <script>
+// ═════════ 난이도 설정 (여기 숫자만 바꾸면 됩니다) ═════════
+var SPEED_SCALE = 0.55;   // 도망 속도 배율 (1 = 원래 속도, 0.55 = 약 절반)
+var FLEE_POWER  = 0.12;   // 화면 안에 들어왔을 때 도망치는 힘 (원래 0.3)
+var REST_MIN = 900, REST_MAX = 1600;   // 가끔 멈춰서 쉬는 시간 (ms)
+var RUN_MIN  = 2200, RUN_MAX = 4000;   // 쉬기 전까지 달리는 시간 (ms)
+var VIEW_ANGLE = 60;      // 화면 한 폭에 보이는 각도(도). 작을수록 조금만 돌려도 크게 움직임
+var RETURN_AFTER = 1500;  // 화면 밖에 이만큼(ms) 있으면 동물이 슬금슬금 돌아옴
+// ════════════════════════════════════════════════════════════
+
 var ANIMALS = {
   fox:{img:'fox.png',       name:'꼬미여우',  desc:'장난꾸러기 여우! 꼬리가 아주 복슬복슬해요.', anim:'anim-run',        speed:4},
   rabbit:{img:'rabbit.png', name:'토끼별',    desc:'달에서 온 토끼. 귀가 엄청 길어요!',           anim:'anim-jump',       speed:5},
   penguin:{img:'penguin.png',name:'펭이',     desc:'남극에서 온 친구. 춤을 아주 잘 춰요!',        anim:'anim-waddle',     speed:2},
   frog:{img:'frog.png',     name:'초록이',    desc:'연못의 수호자! 점프 실력이 최고예요.',         anim:'anim-jump',       speed:5},
   bear:{img:'bear.png',     name:'구름곰',    desc:'구름 위에서 내려온 포근한 곰.',               anim:'anim-stomp',      speed:2},
-  cat:{img:'cat.png',       name:'냥냥이',    desc:'새침하지만 사실 엄청 친해지고 싶어요.',        anim:'anim-melong',     speed:3},
+  cat:{img:'cat.png',       name:'냥냥이',    desc:'새침하지만 사실 엄청 친해지고 싶어요.',        anim:'anim-run',        speed:3},
   star:{img:'star.png',     name:'반짝이',    desc:'별빛으로 만들어진 신비로운 유니콘!',           anim:'anim-spin-dance', speed:4},
   octopus:{img:'octopus.png',name:'문어몽',   desc:'다리가 8개! 뭐든 척척 잡아드려요.',           anim:'anim-swim',       speed:2},
-  lion:{img:'lion.png',     name:'사자왕',    desc:'백수의 왕! 갈기가 멋있어요.',                 anim:'anim-stomp',      speed:3},
-  panda:{img:'panda.png',   name:'판다롱',    desc:'대나무를 엄청 좋아하는 귀요미!',              anim:'anim-shake-head', speed:2},
+  lion:{img:'lion.png',     name:'사자왕',    desc:'백수의 왕! 갈기가 멋있어요.',                 anim:'anim-run',        speed:3},
+  panda:{img:'panda.png',   name:'판다롱',    desc:'대나무를 엄청 좋아하는 귀요미!',              anim:'anim-stomp',      speed:2},
   dragon:{img:'dragon.png', name:'드래곤이',  desc:'하늘을 나는 신비로운 용이에요.',               anim:'anim-fly',        speed:6},
   hamster:{img:'hamster.png',name:'햄찌',     desc:'볼 주머니에 뭐든 넣는 귀여운 친구!',          anim:'anim-run',        speed:6},
-  owl:{img:'owl.png',       name:'부엉부엉',  desc:'밤의 수호자! 눈이 엄청 크답니다.',            anim:'anim-melong',     speed:2},
+  owl:{img:'owl.png',       name:'부엉부엉',  desc:'밤의 수호자! 눈이 엄청 크답니다.',            anim:'anim-fly',        speed:2},
   dolphin:{img:'dolphin.png',name:'돌핀이',   desc:'바다의 악동! 점프를 잘 해요.',                anim:'anim-swim',       speed:5},
   turtle:{img:'turtle.png', name:'거북이',    desc:'느리지만 끝까지 포기하지 않아요!',             anim:'anim-slow-walk',  speed:1},
   chick:{img:'chick.png',   name:'삐약이',    desc:'막 태어난 아기 병아리예요. 너무 귀여워요!',    anim:'anim-waddle',     speed:4},
@@ -269,13 +295,20 @@ var ANIMALS = {
   wolf:{img:'wolf.png',     name:'늑대별',    desc:'달밤에 우우~ 노래하는 멋진 친구!',            anim:'anim-howl',       speed:5},
   miss:{img:'',             name:'동물을 놓쳤어요!', desc:'동물이 도망갔어요!', isMiss:true, anim:'', speed:0}
 };
+// 땅을 딛는 동물만 먼지가 나요
+var GROUND_ANIMS = ['anim-run','anim-jump','anim-stomp','anim-waddle','anim-howl','anim-trumpet','anim-claw'];
 
 var player = null;
 var camStream = null, camTimer = null, detector = null;
 var cooldown = false, pendingCapture = null;
 var arTimer = null, arEscTimer = null;
 var arWX = 0, arWY = 0, arVx = 0, arVy = 0;
-var gyroX = 0, gyroY = 0, lastGamma = null, lastBeta = null;
+var arResting = false, arStateUntil = 0, arAnimal = null, arLastDust = 0;
+var gyroX = 0, gyroY = 0, lastHead = null, lastPitch = null, gyroAlive = false, arOffSince = 0;
+var dragX = null, dragY = null;
+
+function realKeys(){return Object.keys(ANIMALS).filter(function(k){return !ANIMALS[k].isMiss;});}
+function caughtReal(){return player.caught.filter(function(k){return !ANIMALS[k].isMiss;});}
 
 // ── 오디오 ──
 var audioCtx = null;
@@ -311,6 +344,7 @@ function startBGM(){
       bgNodes.push(o);
     });
     t += notes.length*dur;
+    bgNodes = bgNodes.slice(-200);
     bgLoop = setTimeout(playLoop, notes.length*dur*1000-100);
   }
   playLoop();
@@ -366,7 +400,7 @@ function toast(m){var t=document.getElementById('toast');t.textContent=m;t.class
 function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
 function setTopbars(){
   if(!player) return;
-  var cnt = player.caught.length+'/'+Object.keys(ANIMALS).length+' 포획';
+  var cnt = caughtReal().length+'/'+realKeys().length+' 포획';
   ['sc','cp','dx'].forEach(function(p){
     var n=document.getElementById(p+'-name'), c=document.getElementById(p+'-count');
     if(n) n.textContent=player.name+'의 탐험';
@@ -378,6 +412,10 @@ function setTopbars(){
 function onStart(){
   var n = document.getElementById('name-input').value.trim();
   if(!n){toast('이름을 입력해 주세요!');return;}
+  // iPad·iPhone: 기울기 센서 권한은 버튼을 누른 순간에만 요청 가능
+  if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission==='function'){
+    DeviceOrientationEvent.requestPermission().catch(function(){});
+  }
   player = {name:n, caught:[]};
   savePlayer();
   setTopbars();
@@ -509,6 +547,7 @@ function stopCam(){
 // ── AR ──
 function showAR(id,a){
   pendingCapture = id;
+  arAnimal = a;
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   var constraints = {video:{facingMode:'environment'}};
   if(!isIOS){constraints.video.width={ideal:1280};constraints.video.height={ideal:720};}
@@ -520,22 +559,29 @@ function showAR(id,a){
 
   var angle = Math.random()*Math.PI*2;
   arWX = Math.cos(angle)*60; arWY = Math.sin(angle)*60;
-  var spd = a.speed||3;
+  var spd = (a.speed||3)*SPEED_SCALE;
   arVx = (Math.random()>0.5?1:-1)*spd;
-  arVy = (Math.random()>0.5?1:-1)*spd;
-  gyroX=0; gyroY=0; lastGamma=null; lastBeta=null;
+  arVy = (Math.random()>0.5?1:-1)*spd*0.6;
+  gyroX=0; gyroY=0; lastHead=null; lastPitch=null; gyroAlive=false; arOffSince=0;
+  arResting = false;
+  arStateUntil = Date.now() + RUN_MIN + Math.random()*(RUN_MAX-RUN_MIN);
 
   document.getElementById('ar-title').textContent = a.name+' 출현!';
   document.getElementById('ar-close-btn').style.display = 'none';
   var el = document.getElementById('ar-animal');
-  el.innerHTML = '<img src="'+a.img+'" class="animal-img-ar '+a.idle+'" style="width:90px;height:90px;object-fit:contain">';
+  el.style.animation = '';
+  el.innerHTML = '<span class="ar-body"><span class="ar-shadow"></span><img src="'+a.img+'" class="animal-img-ar"></span>';
   el.onclick = confirmCapture;
+  el.style.opacity = '1';
+  updateARAnimal();
   document.getElementById('ar-screen').style.display = 'block';
 
+  // 등장 팝 → 모션 시작
+  var body = el.querySelector('.ar-body');
+  body.style.animation = 'pop .5s ease-out';
   setTimeout(function(){
-    el.style.animation = '';
-    var img=el.querySelector('img');
-    if(img) img.className='animal-img-ar '+a.idle;
+    body.style.animation = '';
+    setAnimalMotion(a.anim);
     playAppearSFX();
     startArMove(a);
     startGyro();
@@ -543,6 +589,29 @@ function showAR(id,a){
       document.getElementById('ar-close-btn').style.display = 'block';
     },5000);
   },500);
+}
+
+// 모션 클래스 바꾸기 (달리기 ↔ 쉬기)
+function setAnimalMotion(cls){
+  var img = document.querySelector('#ar-animal img');
+  if(img) img.className = 'animal-img-ar '+(cls||'');
+  var sh = document.querySelector('#ar-animal .ar-shadow');
+  if(sh) sh.style.animationPlayState = (cls==='anim-rest') ? 'paused' : 'running';
+}
+
+// 실제 이동 속도에 맞춰 모션 빠르기 조절 (빨리 뛰면 다리도 빨리!)
+function syncMotionSpeed(rate){
+  var img = document.querySelector('#ar-animal img');
+  if(!img || !img.getAnimations) return;
+  try{ img.getAnimations().forEach(function(an){an.playbackRate = rate;}); }catch(e){}
+}
+
+function spawnDust(x,y){
+  var d=document.createElement('div');
+  d.className='dust';
+  d.style.left=x+'px'; d.style.top=y+'px';
+  document.getElementById('ar-screen').appendChild(d);
+  setTimeout(function(){d.remove();},650);
 }
 
 function getARPos(){
@@ -554,7 +623,8 @@ function updateARAnimal(){
   var el  = document.getElementById('ar-animal');
   el.style.left = pos.x+'px';
   el.style.top  = pos.y+'px';
-  el.style.transform = arVx<0 ? 'translate(-50%,-50%) scaleX(-1)' : 'translate(-50%,-50%)';
+  // 원본 이미지가 오른쪽을 본다고 가정: 왼쪽으로 갈 때 뒤집기
+  el.style.transform = arVx<-0.05 ? 'translate(-50%,-50%) scaleX(-1)' : 'translate(-50%,-50%)';
 
   var dx=pos.x-window.innerWidth/2, dy=pos.y-window.innerHeight/2;
   var len=Math.sqrt(dx*dx+dy*dy)||1, maxR=22;
@@ -567,28 +637,86 @@ function updateARAnimal(){
   var W=window.innerWidth, H=window.innerHeight;
   var inView=pos.x>40&&pos.x<W-40&&pos.y>80&&pos.y<H-80;
   var hint=document.getElementById('ar-hint');
-  hint.textContent = inView?'동물을 탭해서 포획하세요!':'📡 태블릿을 기울여 동물을 쫓아가세요!';
+  var horiz = Math.abs(dx)>Math.abs(dy);
+  var dirTxt = horiz ? (dx>0?'오른쪽':'왼쪽') : (dy>0?'아래쪽':'위쪽');
+  var oppTxt = horiz ? (dx>0?'왼쪽':'오른쪽') : (dy>0?'위쪽':'아래쪽');
+  var howTxt = gyroAlive ? ('📡 '+dirTxt+'으로 태블릿을 돌려보세요!') : ('👆 동물이 '+dirTxt+'에 있어요. 화면을 '+oppTxt+'으로 끌어보세요!');
+  hint.textContent = inView?(arResting?'지금이야! 쉬고 있을 때 탭!':'동물을 탭해서 포획하세요!'):howTxt;
+  // 화면 가장자리 화살표: 동물이 있는 쪽을 가리킴
+  var ar=document.getElementById('ar-arrow');
+  if(inView){ar.style.display='none';}
+  else{
+    var ang=Math.atan2(dy,dx), m=46;
+    var ex=Math.max(m,Math.min(W-m,pos.x)), ey=Math.max(m+40,Math.min(H-m-40,pos.y));
+    ar.style.display='block';
+    ar.style.left=(ex-15)+'px'; ar.style.top=(ey-18)+'px';
+    ar.style.transform='rotate('+ang+'rad)';
+  }
   hint.className   = inView?'inview':'';
 }
 
 function startArMove(a){
   stopArMove();
+  var spd = (a.speed||3)*SPEED_SCALE;
+  var isGround = GROUND_ANIMS.indexOf(a.anim)!==-1;
   arTimer = setInterval(function(){
+    var now = Date.now();
     var W=window.innerWidth, H=window.innerHeight;
     var pos=getARPos();
-    var inView=pos.x>0&&pos.x<W&&pos.y>0&&pos.y<H;
-    if(inView){
-      var cx=W/2, cy=H/2;
-      var dx=pos.x-cx, dy=pos.y-cy;
-      var len=Math.sqrt(dx*dx+dy*dy)||1;
-      arVx+=dx/len*0.3; arVy+=dy/len*0.3;
+
+    // 달리기 ↔ 쉬기 전환
+    if(now > arStateUntil){
+      arResting = !arResting;
+      if(arResting){
+        arStateUntil = now + REST_MIN + Math.random()*(REST_MAX-REST_MIN);
+        setAnimalMotion('anim-rest');
+      } else {
+        arStateUntil = now + RUN_MIN + Math.random()*(RUN_MAX-RUN_MIN);
+        var ang = Math.random()*Math.PI*2;            // 새 방향으로 출발
+        arVx = Math.cos(ang)*spd; arVy = Math.sin(ang)*spd*0.6;
+        setAnimalMotion(a.anim);
+      }
     }
-    var spd=a.speed||3, vlen=Math.sqrt(arVx*arVx+arVy*arVy)||1;
-    if(vlen>spd*2){arVx=arVx/vlen*spd*2;arVy=arVy/vlen*spd*2;}
+
+    if(arResting){
+      arVx*=0.85; arVy*=0.85;                          // 서서히 멈춤
+    } else {
+      var inView=pos.x>0&&pos.x<W&&pos.y>0&&pos.y<H;
+      if(inView){
+        var dx=pos.x-W/2, dy=pos.y-H/2;
+        var len=Math.sqrt(dx*dx+dy*dy)||1;
+        arVx+=dx/len*FLEE_POWER; arVy+=dy/len*FLEE_POWER;
+      }
+      if(!inView){
+        if(!arOffSince) arOffSince=now;
+        if(now-arOffSince>RETURN_AFTER){            // 오래 안 보이면 화면 쪽으로 돌아옴
+          var bx=W/2-pos.x, by=H/2-pos.y, bl=Math.sqrt(bx*bx+by*by)||1;
+          arVx+=bx/bl*0.15; arVy+=by/bl*0.15;
+        }
+      } else { arOffSince=0; }
+      if(Math.random()<0.015){
+        arVx+=(Math.random()-0.5)*spd;
+        arVy+=(Math.random()-0.5)*spd*0.6;
+      }
+      var vlen=Math.sqrt(arVx*arVx+arVy*arVy)||1;
+      var maxV=spd*1.5;
+      if(vlen>maxV){arVx=arVx/vlen*maxV;arVy=arVy/vlen*maxV;}
+      // 너무 멀리 도망가지 않게 (화면 2배 범위 안에서)
+      if(Math.abs(arWX)>W*1.2){arVx-=Math.sign(arWX)*0.3;}
+      if(Math.abs(arWY)>H*0.7){arVy-=Math.sign(arWY)*0.3;}
+    }
     arWX+=arVx; arWY+=arVy;
-    if(Math.random()<0.02){
-      arVx+=(Math.random()-0.5)*spd;
-      arVy+=(Math.random()-0.5)*spd;
+
+    // 모션 빠르기 = 실제 속도에 비례
+    var cur=Math.sqrt(arVx*arVx+arVy*arVy);
+    if(!arResting) syncMotionSpeed(Math.max(0.6,Math.min(1.6,cur/(spd||1))));
+    else syncMotionSpeed(1);
+
+    // 달릴 때 발밑 먼지
+    if(isGround && !arResting && cur>0.8 && now-arLastDust>180){
+      arLastDust=now;
+      var p=getARPos();
+      spawnDust(p.x-(arVx>0?40:-40), p.y+52);
     }
     updateARAnimal();
   },16);
@@ -598,9 +726,14 @@ function stopArMove(){
   if(arTimer){clearInterval(arTimer);arTimer=null;}
   if(arEscTimer){clearTimeout(arEscTimer);arEscTimer=null;}
   document.getElementById('ar-close-btn').style.display='none';
+  document.querySelectorAll('.dust').forEach(function(d){d.remove();});
 }
 
 function startGyro(){
+  var scr=document.getElementById('ar-screen');
+  scr.addEventListener('touchstart',onDragStart,{passive:true});
+  scr.addEventListener('touchmove',onDragMove,{passive:false});
+  scr.addEventListener('touchend',onDragEnd);
   if(!window.DeviceOrientationEvent) return;
   if(typeof DeviceOrientationEvent.requestPermission==='function'){
     DeviceOrientationEvent.requestPermission().then(function(r){
@@ -610,16 +743,56 @@ function startGyro(){
     window.addEventListener('deviceorientation',onGyro);
   }
 }
+
+// 카메라가 바라보는 방향(좌우 각도 head, 위아래 각도 pitch)을 계산
+// → 태블릿을 세워 들고 몸을 돌려도, 가로·세로 어느 방향으로 들어도 정확히 따라감
+function cameraDir(a,b,g){
+  var d=Math.PI/180; a*=d; b*=d; g*=d;
+  var ca=Math.cos(a), sa=Math.sin(a), cb=Math.cos(b), sb=Math.sin(b), cg=Math.cos(g), sg=Math.sin(g);
+  // 후면 카메라 방향(기기 -z축)을 지구 좌표로 변환
+  var x=-(ca*sg+sa*sb*cg), y=-(sa*sg-ca*sb*cg), z=-(cb*cg);
+  return {head:Math.atan2(x,y)/d, pitch:Math.asin(Math.max(-1,Math.min(1,z)))/d};
+}
 function onGyro(e){
-  if(lastGamma===null){lastGamma=e.gamma||0;lastBeta=e.beta||0;return;}
-  gyroX+=(e.gamma-lastGamma)*4;
-  gyroY+=(e.beta-lastBeta)*4;
-  lastGamma=e.gamma; lastBeta=e.beta;
+  if(e.alpha==null||e.beta==null||e.gamma==null) return;
+  var c=cameraDir(e.alpha,e.beta,e.gamma);
+  if(lastHead===null){lastHead=c.head;lastPitch=c.pitch;return;}
+  var dh=c.head-lastHead;
+  if(dh>180) dh-=360; if(dh<-180) dh+=360;          // 360°↔0° 넘어갈 때 튐 방지
+  var dp=c.pitch-lastPitch;
+  lastHead=c.head; lastPitch=c.pitch;
+  if(Math.abs(dh)>40||Math.abs(dp)>40) return;       // 센서 순간 튐 무시
+  if(Math.abs(dh)>0.05||Math.abs(dp)>0.05) gyroAlive=true;
+  var k=window.innerWidth/VIEW_ANGLE;                // 1도 회전 = 화면 몇 px
+  gyroX+=dh*k;                                       // 오른쪽으로 돌리면 동물은 왼쪽으로
+  gyroY-=dp*k;                                       // 위로 들면 동물은 아래로
   updateARAnimal();
 }
+
+// 센서가 안 될 때: 화면을 손가락으로 끌어서 찾기
+function onDragStart(e){
+  if(e.touches.length!==1) return;
+  dragX=e.touches[0].clientX; dragY=e.touches[0].clientY;
+}
+function onDragMove(e){
+  if(dragX===null||e.touches.length!==1) return;
+  var t=e.touches[0];
+  gyroX-=(t.clientX-dragX); gyroY-=(t.clientY-dragY);
+  dragX=t.clientX; dragY=t.clientY;
+  e.preventDefault();
+  updateARAnimal();
+}
+function onDragEnd(){dragX=null;dragY=null;}
+
 function stopGyro(){
   window.removeEventListener('deviceorientation',onGyro);
-  lastGamma=null;lastBeta=null;gyroX=0;gyroY=0;
+  var scr=document.getElementById('ar-screen');
+  scr.removeEventListener('touchstart',onDragStart);
+  scr.removeEventListener('touchmove',onDragMove);
+  scr.removeEventListener('touchend',onDragEnd);
+  dragX=null;dragY=null;
+  lastHead=null;lastPitch=null;gyroX=0;gyroY=0;
+  var ar=document.getElementById('ar-arrow'); if(ar) ar.style.display='none';
 }
 
 function confirmCapture(){
@@ -627,7 +800,6 @@ function confirmCapture(){
   stopArMove(); stopGyro();
   var id=pendingCapture; pendingCapture=null;
 
-  // 포켓볼 던지기 애니메이션 시작
   var overlay=document.getElementById('pokeball-overlay');
   var pb=document.getElementById('pokeball');
   var animalEl=document.getElementById('ar-animal');
@@ -650,7 +822,7 @@ function confirmCapture(){
     setTimeout(function(){document.getElementById('ar-flash').style.opacity='0';},150);
   },700);
 
-  // 3단계: 흔들기 (1~3번)
+  // 3단계: 흔들기 (3번)
   setTimeout(function(){
     pb.style.animation='pb-shake 0.5s ease-in-out';
     playCatchSFX();
@@ -658,16 +830,12 @@ function confirmCapture(){
   setTimeout(function(){
     pb.style.animation='none';
     pb.style.transform='translateX(-50%) rotate(540deg)';
-    setTimeout(function(){
-      pb.style.animation='pb-shake 0.5s ease-in-out';
-    },50);
+    setTimeout(function(){pb.style.animation='pb-shake 0.5s ease-in-out';},50);
   },1750);
   setTimeout(function(){
     pb.style.animation='none';
     pb.style.transform='translateX(-50%) rotate(540deg)';
-    setTimeout(function(){
-      pb.style.animation='pb-shake 0.5s ease-in-out';
-    },50);
+    setTimeout(function(){pb.style.animation='pb-shake 0.5s ease-in-out';},50);
   },2300);
 
   // 4단계: 포획 확정 + 별 터짐
@@ -709,10 +877,9 @@ function doCapture(id){
     var msgs=['바람만 쐤어요... 다음엔 잡을 수 있을 거예요!','나뭇잎만 흔들렸어요. 동물이 도망갔나봐요!','발자국만 남아있어요. 조금 늦었나봐요!','동물이 숨어버렸어요. 다른 곳을 찾아봐요!','땅굴로 도망갔어요! 다음엔 더 빨리 찾아봐요!'];
     c.innerHTML='<div class="already"><img src="logo.png" style="width:80px;height:80px;object-fit:contain;margin-bottom:8px"><p style="color:#e53935">동물을 놓쳤어요!</p><small>'+msgs[Math.floor(Math.random()*msgs.length)]+'</small></div>';
   } else if(isNew){
-    c.innerHTML='<span class="sparkle">✨</span><img src="'+a.img+'" class="animal-img" style="animation:pop .5s ease-out"><div class="cap-title">'+a.name+' 포획!</div><div class="cap-desc">'+a.desc+'</div><div class="cap-new">🎉 새로운 동물 발견!</div>';
-    var real=Object.keys(ANIMALS).filter(function(k){return !ANIMALS[k].isMiss;});
-    var cReal=player.caught.filter(function(k){return !ANIMALS[k].isMiss;});
-    if(cReal.length===real.length) setTimeout(function(){toast('🏆 모든 동물 포획 완료!');},600);
+    // 포획 화면에서도 동물이 자기 모션으로 움직여요
+    c.innerHTML='<span class="sparkle">✨</span><div class="cap-pop"><img src="'+a.img+'" class="animal-img '+a.anim+'"></div><div class="cap-title">'+a.name+' 포획!</div><div class="cap-desc">'+a.desc+'</div><div class="cap-new">🎉 새로운 동물 발견!</div>';
+    if(caughtReal().length===realKeys().length) setTimeout(function(){toast('🏆 모든 동물 포획 완료!');},600);
   } else {
     c.innerHTML='<div class="already"><img src="'+a.img+'" class="animal-img"><p>'+a.name+' - 이미 포획했어요!</p><small>다른 QR을 찾아보세요</small></div>';
   }
@@ -723,7 +890,7 @@ function doCapture(id){
 function goDex(){
   stopCam(); stopArMove(); stopGyro();
   setTopbars();
-  document.getElementById('dx-bar').textContent=player.caught.length+'마리 / '+Object.keys(ANIMALS).length+'마리 발견';
+  document.getElementById('dx-bar').textContent=caughtReal().length+'마리 / '+realKeys().length+'마리 발견';
   var grid=document.getElementById('dex-grid');
   grid.innerHTML='';
   Object.entries(ANIMALS).forEach(function(entry,i){
@@ -731,10 +898,11 @@ function goDex(){
     var ok=player.caught.indexOf(id)!==-1;
     var div=document.createElement('div');
     div.className='dex-card'+(ok?' caught':' unknown');
+    var gray = ok?'':'filter:grayscale(1);opacity:.35';
     if(a.isMiss){
-      div.innerHTML='<img src="logo.png" style="width:28px;height:28px;object-fit:contain;margin-bottom:2px;'+(ok?'':'filter:grayscale(1);opacity:.35')+'"><div class="dex-label">'+(ok?'놓쳤어요':'???')+'</div><div class="dex-num">No.'+String(i+1).padStart(2,'0')+'</div>';
+      div.innerHTML='<img src="logo.png" class="dex-img" style="'+gray+'"><div class="dex-label">'+(ok?'놓쳤어요':'???')+'</div><div class="dex-num">No.'+String(i+1).padStart(2,'0')+'</div>';
     } else {
-      div.innerHTML='<img src="'+a.img+'" class="dex-img" style="'+(ok?'':'filter:grayscale(1);opacity:.35')+'"><div class="dex-label">'+(ok?a.name:'???')+'</div><div class="dex-num">No.'+String(i+1).padStart(2,'0')+'</div>';
+      div.innerHTML='<img src="'+a.img+'" class="dex-img" style="'+gray+'"><div class="dex-label">'+(ok?a.name:'???')+'</div><div class="dex-num">No.'+String(i+1).padStart(2,'0')+'</div>';
     }
     grid.appendChild(div);
   });
