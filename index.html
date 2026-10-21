@@ -27,7 +27,7 @@ input[type=text]:focus{border-color:#2d5be3}
 /* 동물 이미지 크기 */
 .animal-img{width:130px;height:130px;object-fit:contain;display:block;margin:0 auto 8px}
 .dex-img{width:40px;height:40px;object-fit:contain;display:block;margin:0 auto 2px}
-.animal-img-ar{width:110px;height:110px;object-fit:contain;display:block;transform-origin:50% 90%}
+.animal-img-ar{width:min(30vw,45vh);height:min(30vw,45vh);object-fit:contain;display:block;transform-origin:50% 90%}
 
 /* 스캔 카메라 */
 #cam-wrap{position:relative;width:100%;max-width:340px;border-radius:16px;overflow:hidden;background:#000;margin-bottom:10px}
@@ -62,37 +62,37 @@ input[type=text]:focus{border-color:#2d5be3}
 #ar-animal{position:absolute;cursor:pointer;user-select:none;-webkit-user-select:none;line-height:1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.6));transform:translate(-50%,-50%);padding:10px}
 #ar-animal .ar-body{position:relative;display:block}
 /* 발밑 그림자: 달릴 때 같이 커졌다 작아짐 */
-#ar-animal .ar-shadow{position:absolute;left:50%;bottom:-4px;width:70px;height:14px;margin-left:-35px;border-radius:50%;background:rgba(0,0,0,.35);filter:blur(2px);animation:shadow-bob .5s ease-in-out infinite}
+#ar-animal .ar-shadow{position:absolute;left:18%;bottom:-2%;width:64%;height:11%;border-radius:50%;background:rgba(0,0,0,.35);filter:blur(2px);animation:shadow-bob .5s ease-in-out infinite}
 @keyframes shadow-bob{0%,100%{transform:scale(1);opacity:.45}50%{transform:scale(.7);opacity:.25}}
 /* 달리기 먼지 */
-.dust{position:absolute;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.75);pointer-events:none;animation:dust-fade .6s ease-out forwards}
+.dust{position:absolute;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.75);pointer-events:none;animation:dust-fade .6s ease-out forwards}
 @keyframes dust-fade{0%{transform:translate(-50%,-50%) scale(.4);opacity:.8}100%{transform:translate(-50%,-80%) scale(1.6);opacity:0}}
 
 /* ── 동물별 모션 (img에 적용) ── */
 /* 달리기: 통통 튀며 앞으로 숙였다 펴기 */
-@keyframes run{0%{transform:translateY(0) rotate(-6deg) scaleY(.94) scaleX(1.06)}25%{transform:translateY(-18px) rotate(4deg) scaleY(1.06) scaleX(.95)}50%{transform:translateY(0) rotate(-6deg) scaleY(.92) scaleX(1.08)}75%{transform:translateY(-12px) rotate(3deg) scaleY(1.04) scaleX(.97)}100%{transform:translateY(0) rotate(-6deg) scaleY(.94) scaleX(1.06)}}
+@keyframes run{0%{transform:translateY(0) rotate(-6deg) scaleY(.94) scaleX(1.06)}25%{transform:translateY(-12.3%) rotate(4deg) scaleY(1.06) scaleX(.95)}50%{transform:translateY(0) rotate(-6deg) scaleY(.92) scaleX(1.08)}75%{transform:translateY(-8.2%) rotate(3deg) scaleY(1.04) scaleX(.97)}100%{transform:translateY(0) rotate(-6deg) scaleY(.94) scaleX(1.06)}}
 /* 깡충: 웅크렸다가 높이 점프 */
-@keyframes jump{0%,100%{transform:translateY(0) scaleY(.8) scaleX(1.18)}15%{transform:translateY(-6px) scaleY(1.15) scaleX(.88)}45%{transform:translateY(-46px) scaleY(1.05) scaleX(.95) rotate(-6deg)}75%{transform:translateY(-6px) scaleY(1.1) scaleX(.92)}88%{transform:translateY(0) scaleY(.78) scaleX(1.2)}}
+@keyframes jump{0%,100%{transform:translateY(0) scaleY(.8) scaleX(1.18)}15%{transform:translateY(-4.1%) scaleY(1.15) scaleX(.88)}45%{transform:translateY(-31.4%) scaleY(1.05) scaleX(.95) rotate(-6deg)}75%{transform:translateY(-4.1%) scaleY(1.1) scaleX(.92)}88%{transform:translateY(0) scaleY(.78) scaleX(1.2)}}
 @keyframes melong{0%,60%,100%{transform:rotate(0deg) scale(1)}10%{transform:rotate(-15deg) scale(1.1)}20%{transform:rotate(15deg) scale(1.15)}30%{transform:rotate(-10deg) scale(1.1)}40%{transform:rotate(10deg) scale(1.05)}50%{transform:rotate(0deg) scale(1.1)}}
 /* 헤엄: 몸 전체가 S자로 출렁 */
-@keyframes swim{0%,100%{transform:rotate(-12deg) translateY(0) scaleX(1)}25%{transform:rotate(0deg) translateY(-10px) scaleX(1.08)}50%{transform:rotate(12deg) translateY(0) scaleX(1)}75%{transform:rotate(0deg) translateY(8px) scaleX(.94)}}
+@keyframes swim{0%,100%{transform:rotate(-12deg) translateY(0) scaleX(1)}25%{transform:rotate(0deg) translateY(-6.8%) scaleX(1.08)}50%{transform:rotate(12deg) translateY(0) scaleX(1)}75%{transform:rotate(0deg) translateY(5.5%) scaleX(.94)}}
 /* 뒤뚱: 좌우로 크게 기울며 걷기 */
-@keyframes waddle{0%,100%{transform:rotate(-14deg) translateY(0)}25%{transform:rotate(0deg) translateY(-10px)}50%{transform:rotate(14deg) translateY(0)}75%{transform:rotate(0deg) translateY(-10px)}}
+@keyframes waddle{0%,100%{transform:rotate(-14deg) translateY(0)}25%{transform:rotate(0deg) translateY(-6.8%)}50%{transform:rotate(14deg) translateY(0)}75%{transform:rotate(0deg) translateY(-6.8%)}}
 /* 쿵쿵: 무겁게 내려찍기 */
-@keyframes stomp{0%,100%{transform:scaleY(1) scaleX(1) translateY(0) rotate(0)}20%{transform:scaleY(1.06) scaleX(.96) translateY(-12px) rotate(-4deg)}40%{transform:scaleY(.82) scaleX(1.14) translateY(4px) rotate(0)}60%{transform:scaleY(1.06) scaleX(.96) translateY(-12px) rotate(4deg)}80%{transform:scaleY(.82) scaleX(1.14) translateY(4px) rotate(0)}}
+@keyframes stomp{0%,100%{transform:scaleY(1) scaleX(1) translateY(0) rotate(0)}20%{transform:scaleY(1.06) scaleX(.96) translateY(-8.2%) rotate(-4deg)}40%{transform:scaleY(.82) scaleX(1.14) translateY(2.7%) rotate(0)}60%{transform:scaleY(1.06) scaleX(.96) translateY(-8.2%) rotate(4deg)}80%{transform:scaleY(.82) scaleX(1.14) translateY(2.7%) rotate(0)}}
 /* 날기: 위아래로 크게 떠오르며 날갯짓 */
-@keyframes fly{0%,100%{transform:translateY(0) rotate(-6deg) scaleY(1)}25%{transform:translateY(-30px) rotate(-12deg) scaleY(.9)}50%{transform:translateY(-14px) rotate(6deg) scaleY(1.08)}75%{transform:translateY(-34px) rotate(10deg) scaleY(.9)}}
-@keyframes spin-dance{0%{transform:rotate(0deg) scale(1) translateY(0)}25%{transform:rotate(-25deg) scale(1.12) translateY(-14px)}50%{transform:rotate(0deg) scale(.95) translateY(0)}75%{transform:rotate(25deg) scale(1.12) translateY(-14px)}100%{transform:rotate(0deg) scale(1) translateY(0)}}
-@keyframes crawl{0%,100%{transform:rotate(0deg) translateX(0) scaleX(1)}30%{transform:rotate(-5deg) translateX(-6px) scaleX(1.08)}70%{transform:rotate(5deg) translateX(6px) scaleX(.95)}}
-@keyframes shake-head{0%,100%{transform:rotate(0deg) scale(1) translateY(0)}15%{transform:rotate(-14deg) scale(1.05) translateY(-6px)}35%{transform:rotate(14deg) scale(1.08) translateY(0)}55%{transform:rotate(-10deg) scale(1.05) translateY(-6px)}75%{transform:rotate(10deg) scale(1) translateY(0)}}
+@keyframes fly{0%,100%{transform:translateY(0) rotate(-6deg) scaleY(1)}25%{transform:translateY(-20.5%) rotate(-12deg) scaleY(.9)}50%{transform:translateY(-9.5%) rotate(6deg) scaleY(1.08)}75%{transform:translateY(-23.2%) rotate(10deg) scaleY(.9)}}
+@keyframes spin-dance{0%{transform:rotate(0deg) scale(1) translateY(0)}25%{transform:rotate(-25deg) scale(1.12) translateY(-9.5%)}50%{transform:rotate(0deg) scale(.95) translateY(0)}75%{transform:rotate(25deg) scale(1.12) translateY(-9.5%)}100%{transform:rotate(0deg) scale(1) translateY(0)}}
+@keyframes crawl{0%,100%{transform:rotate(0deg) translateX(0) scaleX(1)}30%{transform:rotate(-5deg) translateX(-4.1%) scaleX(1.08)}70%{transform:rotate(5deg) translateX(4.1%) scaleX(.95)}}
+@keyframes shake-head{0%,100%{transform:rotate(0deg) scale(1) translateY(0)}15%{transform:rotate(-14deg) scale(1.05) translateY(-4.1%)}35%{transform:rotate(14deg) scale(1.08) translateY(0)}55%{transform:rotate(-10deg) scale(1.05) translateY(-4.1%)}75%{transform:rotate(10deg) scale(1) translateY(0)}}
 /* 느릿느릿: 한 발씩 천천히 */
-@keyframes slow-walk{0%,100%{transform:translateY(0) rotate(-4deg)}25%{transform:translateY(-6px) rotate(0)}50%{transform:translateY(0) rotate(4deg)}75%{transform:translateY(-6px) rotate(0)}}
+@keyframes slow-walk{0%,100%{transform:translateY(0) rotate(-4deg)}25%{transform:translateY(-4.1%) rotate(0)}50%{transform:translateY(0) rotate(4deg)}75%{transform:translateY(-4.1%) rotate(0)}}
 /* 집게: 옆으로 종종걸음 + 집게질 */
-@keyframes claw{0%,100%{transform:translateX(0) scaleX(1) rotate(0)}20%{transform:translateX(-8px) scaleX(1.12) rotate(-8deg) translateY(-4px)}50%{transform:translateX(0) scaleX(.9) rotate(0)}70%{transform:translateX(8px) scaleX(1.12) rotate(8deg) translateY(-4px)}}
-@keyframes trumpet{0%,100%{transform:scaleX(1) scaleY(1) rotate(0deg) translateY(0)}25%{transform:scaleX(.92) scaleY(1.1) rotate(-5deg) translateY(-10px)}50%{transform:scaleX(1.1) scaleY(.88) rotate(0) translateY(2px)}75%{transform:scaleX(.92) scaleY(1.1) rotate(5deg) translateY(-10px)}}
-@keyframes howl{0%,100%{transform:rotate(0deg) translateY(0) scaleY(.95)}25%{transform:rotate(-6deg) translateY(-20px) scaleY(1.06)}50%{transform:rotate(0deg) translateY(0) scaleY(.92)}75%{transform:rotate(6deg) translateY(-20px) scaleY(1.06)}}
+@keyframes claw{0%,100%{transform:translateX(0) scaleX(1) rotate(0)}20%{transform:translateX(-5.5%) scaleX(1.12) rotate(-8deg) translateY(-2.7%)}50%{transform:translateX(0) scaleX(.9) rotate(0)}70%{transform:translateX(5.5%) scaleX(1.12) rotate(8deg) translateY(-2.7%)}}
+@keyframes trumpet{0%,100%{transform:scaleX(1) scaleY(1) rotate(0deg) translateY(0)}25%{transform:scaleX(.92) scaleY(1.1) rotate(-5deg) translateY(-6.8%)}50%{transform:scaleX(1.1) scaleY(.88) rotate(0) translateY(1.4%)}75%{transform:scaleX(.92) scaleY(1.1) rotate(5deg) translateY(-6.8%)}}
+@keyframes howl{0%,100%{transform:rotate(0deg) translateY(0) scaleY(.95)}25%{transform:rotate(-6deg) translateY(-13.6%) scaleY(1.06)}50%{transform:rotate(0deg) translateY(0) scaleY(.92)}75%{transform:rotate(6deg) translateY(-13.6%) scaleY(1.06)}}
 /* 쉬는 중: 두리번두리번 */
-@keyframes look-around{0%,100%{transform:rotate(0) translateY(0)}20%{transform:rotate(-10deg) translateY(-3px)}40%{transform:rotate(0) translateY(0)}60%{transform:rotate(10deg) translateY(-3px)}80%{transform:rotate(0) translateY(0)}}
+@keyframes look-around{0%,100%{transform:rotate(0) translateY(0)}20%{transform:rotate(-10deg) translateY(-2.0%)}40%{transform:rotate(0) translateY(0)}60%{transform:rotate(10deg) translateY(-2.0%)}80%{transform:rotate(0) translateY(0)}}
 
 .anim-run{animation:run .45s linear infinite}
 .anim-jump{animation:jump .75s ease-in-out infinite}
@@ -614,6 +614,11 @@ function spawnDust(x,y){
   setTimeout(function(){d.remove();},650);
 }
 
+// 동물 그림 크기의 절반(px)
+function arHalf(){
+  var img=document.querySelector('#ar-animal img');
+  return img&&img.offsetWidth ? img.offsetWidth/2 : Math.min(window.innerWidth*0.3,window.innerHeight*0.45)/2;
+}
 function getARPos(){
   return {x: window.innerWidth/2+arWX-gyroX, y: window.innerHeight/2+arWY-gyroY};
 }
@@ -635,7 +640,8 @@ function updateARAnimal(){
   dot.style.top =Math.max(6,Math.min(58,ry))+'px';
 
   var W=window.innerWidth, H=window.innerHeight;
-  var inView=pos.x>40&&pos.x<W-40&&pos.y>80&&pos.y<H-80;
+  var half=arHalf();
+  var inView=pos.x>half*0.5&&pos.x<W-half*0.5&&pos.y>half*0.5+40&&pos.y<H-half*0.5-40;
   var hint=document.getElementById('ar-hint');
   var horiz = Math.abs(dx)>Math.abs(dy);
   var dirTxt = horiz ? (dx>0?'오른쪽':'왼쪽') : (dy>0?'아래쪽':'위쪽');
@@ -716,7 +722,8 @@ function startArMove(a){
     if(isGround && !arResting && cur>0.8 && now-arLastDust>180){
       arLastDust=now;
       var p=getARPos();
-      spawnDust(p.x-(arVx>0?40:-40), p.y+52);
+      var hs=arHalf();
+      spawnDust(p.x-(arVx>0?hs*0.6:-hs*0.6), p.y+hs*0.9);
     }
     updateARAnimal();
   },16);
